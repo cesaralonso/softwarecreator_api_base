@@ -21,21 +21,20 @@ module.exports = passport => {
                     let user = result[0];
 
                     let _super = user.super;
-                    let query = '';
-                    let acceso = '';
+                    let _query = '';
 
                     if (!_super) {
-                        acceso = `AND p.acceso = 1`;
-                    }
-
-                    query = `SELECT m.nombre, p.writeable, p.deleteable, p.readable, p.updateable, p.write_own, p.delete_own, p.read_own, p.update_own  
+                        _query = `SELECT m.nombre, p.writeable, p.deleteable, p.readable, p.updateable, p.write_own, p.delete_own, p.read_own, p.update_own  
                                  FROM si_user as u 
                                  INNER JOIN si_rol as r ON r.idsi_rol = u.Rol_idsi_rol 
                                  INNER JOIN si_permiso as p ON p.Rol_idsi_rol = r.idsi_rol 
                                  INNER JOIN si_modulo as m ON m.idsi_modulo = p.Modulo_idsi_modulo 
-                                 WHERE u.idsi_user = ? ${acceso}`;
+                                 WHERE u.idsi_user = ? AND p.acceso = 1`;
+                    } else {
+                        _query = `SELECT m.nombre FROM si_modulo as m`;
+                    }
 
-                    connection.query(query, [jwt_payload.idsi_user], (error, modules) => {
+                    connection.query(_query, [jwt_payload.idsi_user], (error, modules) => {
 
                         if ( error ) {
                             return done(error);
