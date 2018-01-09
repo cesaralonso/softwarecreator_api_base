@@ -19,23 +19,41 @@ module.exports = passport => {
                 if (result[0]) {
 
                     let user = result[0];
-                    
-                    let _super = false;
-                    if (isset(user.super) === 1) {
-                        _super = true;
+
+                    let _super = user.super;
+                    let query = '';
+                    let acceso = '';
+
+                    if (!_super) {
+                        acceso = `AND p.acceso = 1`;
                     }
 
-                    connection.query(`
-                                    SELECT m.nombre, p.writeable, p.deleteable, p.readable, p.updateable, p.write_own, p.delete_own, p.read_own, p.update_own  
-                                    FROM si_user as u 
-                                    INNER JOIN si_rol as r ON r.idsi_rol = u.Rol_idsi_rol 
-                                    INNER JOIN si_permiso as p ON p.Rol_idsi_rol = r.idsi_rol 
-                                    INNER JOIN si_modulo as m ON m.idsi_modulo = p.Modulo_idsi_modulo 
-                                    WHERE u.idsi_user = ? AND p.acceso = 1`, [jwt_payload.idsi_user], (error, modules) => {
+                    query = `SELECT m.nombre, p.writeable, p.deleteable, p.readable, p.updateable, p.write_own, p.delete_own, p.read_own, p.update_own  
+                                 FROM si_user as u 
+                                 INNER JOIN si_rol as r ON r.idsi_rol = u.Rol_idsi_rol 
+                                 INNER JOIN si_permiso as p ON p.Rol_idsi_rol = r.idsi_rol 
+                                 INNER JOIN si_modulo as m ON m.idsi_modulo = p.Modulo_idsi_modulo 
+                                 WHERE u.idsi_user = ? ${acceso}`;
+
+                    connection.query(query, [jwt_payload.idsi_user], (error, modules) => {
 
                         if ( error ) {
                             return done(error);
                         }
+
+                        if (_super) {
+                            modules.forEach(element => {
+                                element.writeable = 1;
+                                element.deleteable = 1;
+                                element.readable = 1;
+                                element.updateable = 1;
+                                element.write_own = 0;
+                                element.delete_own = 0;
+                                element.read_own = 0;
+                                element.update_own = 0;
+                            });
+                        }
+
                         if ( modules.length > 0 ) {
                             return done(null, {
                                 success: true,
