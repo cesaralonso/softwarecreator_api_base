@@ -12,7 +12,7 @@ module.exports = passport => {
         if ( !connection )
             return done('Connection refused');
 
-        connection.query('SELECT idsi_user, usuario, email, Rol_idsi_rol, super FROM si_user WHERE idsi_user = ?', [jwt_payload.idsi_user], (error, result) => {
+        connection.query('SELECT idsi_user, usuario, email, Rol_idsi_rol, super FROM si_user WHERE idsi_user = ? HAVING baja IS NULL OR baja = false', [jwt_payload.idsi_user], (error, result) => {
                 if ( error ) {
                     return done(error);
                 }
@@ -29,7 +29,7 @@ module.exports = passport => {
                                  INNER JOIN si_rol as r ON r.idsi_rol = u.Rol_idsi_rol 
                                  INNER JOIN si_permiso as p ON p.Rol_idsi_rol = r.idsi_rol 
                                  INNER JOIN si_modulo as m ON m.idsi_modulo = p.Modulo_idsi_modulo 
-                                 WHERE u.idsi_user = ? AND p.acceso = 1`;
+                                 WHERE u.idsi_user = ? AND p.acceso = 1 HAVING m.baja IS NULL OR m.baja = false`;
                     } else {
                         _query = `SELECT m.nombre FROM si_modulo as m`;
                     }
