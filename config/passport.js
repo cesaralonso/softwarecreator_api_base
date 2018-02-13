@@ -12,7 +12,7 @@ module.exports = passport => {
         if ( !connection )
             return done('Connection refused');
 
-        connection.query('SELECT idsi_user, usuario, email, Rol_idsi_rol, super, baja FROM si_user WHERE idsi_user = ? HAVING baja IS NULL OR baja = false', [jwt_payload.idsi_user], (error, result) => {
+        connection.query('SELECT idsi_user, usuario, email, si_rol_idsi_rol, super, baja FROM si_user WHERE idsi_user = ? HAVING baja IS NULL OR baja = false', [jwt_payload.idsi_user], (error, result) => {
                 if ( error ) {
                     return done(error);
                 }
@@ -26,9 +26,9 @@ module.exports = passport => {
                     if (!_super) {
                         _query = `SELECT m.nombre, m.baja, p.writeable, p.deleteable, p.readable, p.updateable, p.write_own, p.delete_own, p.read_own, p.update_own  
                                  FROM si_user as u 
-                                 INNER JOIN si_rol as r ON r.idsi_rol = u.Rol_idsi_rol 
-                                 INNER JOIN si_permiso as p ON p.Rol_idsi_rol = r.idsi_rol 
-                                 INNER JOIN si_modulo as m ON m.idsi_modulo = p.Modulo_idsi_modulo 
+                                 INNER JOIN si_rol as r ON r.idsi_rol = u.si_rol_idsi_rol 
+                                 INNER JOIN si_permiso as p ON p.si_rol_idsi_rol = r.idsi_rol 
+                                 INNER JOIN si_modulo as m ON m.idsi_modulo = p.si_modulo_idsi_modulo 
                                  WHERE u.idsi_user = ? AND p.acceso = 1 HAVING m.baja IS NULL OR m.baja = false`;
                     } else {
                         _query = `SELECT m.nombre FROM si_modulo as m`;

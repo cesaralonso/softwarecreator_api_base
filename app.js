@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
 const passport = require('passport');
+var CronJob = require('cron').CronJob;
 
 
 //Route importation.
@@ -27,6 +28,11 @@ require('./config/passport')(passport);
 
 // Warehouses
 app.use('/example', example);
+
+
+// FUNCIONES DE CRON
+// new CronJob('10 * * * * * *', function() {
+// }, null, true, 'America/Mexico_City');
 
 
 // Set port
