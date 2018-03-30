@@ -24,7 +24,7 @@ module.exports = passport => {
                     let _query = '';
 
                     if (!_super) {
-                        _query = `SELECT m.nombre, m.baja, p.writeable, p.deleteable, p.readable, p.updateable, p.write_own, p.delete_own, p.read_own, p.update_own  
+                        _query = `SELECT m.nombre, p.acceso, m.baja, p.writeable, p.deleteable, p.readable, p.updateable, p.write_own, p.delete_own, p.read_own, p.update_own  
                                  FROM si_user as u 
                                  INNER JOIN si_rol as r ON r.idsi_rol = u.si_rol_idsi_rol 
                                  INNER JOIN si_permiso as p ON p.si_rol_idsi_rol = r.idsi_rol 
@@ -42,6 +42,7 @@ module.exports = passport => {
 
                         if (_super) {
                             modules.forEach(element => {
+                                element.acceso = 1;
                                 element.writeable = 1;
                                 element.deleteable = 1;
                                 element.readable = 1;
@@ -53,21 +54,36 @@ module.exports = passport => {
                             });
                         }
 
-                        if ( modules.length > 0 ) {
+                        if ( modules.length > 0 ) {   
+                            console.log("Autenticación correcta");
                             return done(null, {
                                 success: true,
                                 message: 'Autenticación correcta',
                                 user: user,
                                 modules: modules,
-                                super: _super
+                                super: _super || 0
                             });
                         } else {
-                            return done(null, false);
+                            console.log("Sin permiso de acceso");
+                            return done(null, {
+                                success: false,
+                                message: 'Sin permiso de acceso',
+                                user: {},
+                                modules: [],
+                                super: 0
+                            });
                         }
 
                     })
                 } else {
-                    return done(null, false);
+                    console.log("Autenticación fallida");
+                    return done(null, {
+                                success: false,
+                                message: 'Autenticación fallida',
+                                user: {},
+                                modules: [],
+                                super: 0
+                            });
                 }
         })
     }));
