@@ -8,7 +8,7 @@ var compression = require('compression');
 const helmet = require("helmet");
 const mysql = require('mysql');
 const dotenv = require('dotenv');
-var CronJob = require('cron').CronJob;
+// var CronJob = require('cron').CronJob;
 
 dotenv.config();
 
