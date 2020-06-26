@@ -5,7 +5,7 @@ const connection = require('./db-connection');
 module.exports = passport => {
     var opts = {};
     opts.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme('jwt');
-    opts.secretOrKey = process.env.SECRET_PASSWORD;
+    opts.secretOrKey = process.env.SECRET_PASSWORD || 'mysecretpassword';
     
     passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
 
