@@ -1,20 +1,30 @@
+
 const mysql = require('mysql');
 const dotenv = require('dotenv');
+
 dotenv.config();
 
-// POOL CONNECTION
-var connection = mysql.createPool({
-    connectionLimit : 100,
-    waitForConnections : true,
-    queueLimit : 0,  
+
+// connect to the db
+connectionInfo = {
+    connectionLimit: 10,
+    waitForConnections: true,
+    queueLimit: 0,
+    getConnection: 0,
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
-    password: process.env.DB_PASS,
+    password: process.env.DB_PASS, // "fGoPpmais+R$", // process.env.DB_PASS, //   || 'fGoPpmais+R$'
     port: process.env.DB_PORT,
     database: process.env.DB_NAME,
     debug:  false,
     waitTimeOut : 28800,
-});
+    multipleStatements: true
+};
+
+//create mysql connection pool
+var connection = mysql.createPool(
+  connectionInfo
+);
 
 // Attempt to catch disconnects 
 connection.on('connection', function (connection) {

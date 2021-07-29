@@ -55,7 +55,6 @@ module.exports = passport => {
                         }
 
                         if ( modules.length > 0 ) {   
-                            console.log("Autenticación correcta");
                             return done(null, {
                                 success: true,
                                 message: 'Autenticación correcta',
@@ -64,7 +63,6 @@ module.exports = passport => {
                                 super: _super || 0
                             });
                         } else {
-                            console.log("Sin permiso de acceso");
                             return done(null, {
                                 success: false,
                                 message: 'Sin permiso de acceso',
@@ -76,8 +74,7 @@ module.exports = passport => {
 
                     })
                 } else {
-                    console.log("Autenticación fallida");
-                    return done(null, {
+                   return done(null, {
                                 success: false,
                                 message: 'Autenticación fallida',
                                 user: {},
