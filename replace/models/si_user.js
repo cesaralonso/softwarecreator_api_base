@@ -9,10 +9,11 @@ let transport = nodemailer.createTransport({
     host: 'rs6-nyc.serverhostgroup.com',
     port: 465,
     auth: {
-       user: 'clientes.reportes@plataforma-iberoil.com',
-       pass: 'fGoPpmais+R$'
+       user: 'clientes@plataforma-X.com',
+       pass: 'XXXXXXXXXXX'
     }
 });
+
 
 
 const Si_user = {};
@@ -43,15 +44,15 @@ Si_user.insert = (user, connection, next) => {
 
             // EMAIL
             const email = user.email;
-            const subject = 'Confirma tu correo | Iberoil Plataforma Clientes';
-            const mensaje = '¡Bienvenido a Iberoil Plataforma Clientes!, debes ingresar a la siguiente liga para confirmar tu correo en un lapso menor a 30 minutos a partir de la creación del usuario. Liga: https://plataforma-iberoil.com/ingresa-tu-codigo-registro.php?code=' + code;
+            const subject = 'Confirma tu correo | x Plataforma Clientes';
+            const mensaje = '¡Bienvenido a x Plataforma Clientes!, debes ingresar a la siguiente liga para confirmar tu correo en un lapso menor a 30 minutos a partir de la creación del usuario. Liga: https://plataforma-x.com/ingresa-tu-codigo-registro.php?code=' + code;
             const html = `
                 <div style="text-align: center;">
-                    <img alt="Logo Iberoil" src="https://plataforma-iberoil.com/assets/img/iberoil-logo.png" width="200">
-                    <h2>De la R Asesoria en Servicios & Laboratorio, S.A. de C.V.</h2>
+                    <img alt="Logo x" src="https://plataforma-x.com/assets/img/logo.png" width="200">
+                    <h2>S.A. de C.V.</h2>
                     <h1>¡Bienvenido a Plataforma Clientes!</h1>
                     <p>Debes ingresar a la siguiente
-                    <a href="https://plataforma-iberoil.com/ingresa-tu-codigo-registro.php?code=${code}&email=${email}">liga (https://plataforma-iberoil.com/ingresa-tu-codigo-registro.php?code=${code}&email=${email})</a> para confirmar tu correo en un lapso menor a 30 minutos a partir de la creación del usuario.
+                    <a href="https://plataforma-x.com/ingresa-tu-codigo-registro.php?code=${code}&email=${email}">liga (https://plataforma-x.com/ingresa-tu-codigo-registro.php?code=${code}&email=${email})</a> para confirmar tu correo en un lapso menor a 30 minutos a partir de la creación del usuario.
                     </p>
                     <hr>
                     <p>
@@ -61,7 +62,7 @@ Si_user.insert = (user, connection, next) => {
             `;
 
             const message = {
-                from: 'alertas@plataforma-iberoil.com',
+                from: 'alertas@plataforma-x.com',
                 to: email,
                 subject: subject,
                 text: mensaje,
@@ -114,12 +115,12 @@ Si_user.forgot = (user, connection, next) => {
 
                     // EMAIL
                     const email = user.email;
-                    const subject = 'Recordar tu contraseña | Iberoil Plataforma Clientes';
+                    const subject = 'Recordar tu contraseña | x Plataforma Clientes';
                     const mensaje = 'Hemos cambiado tu contraseña provisionalmente por la siguiente: ' + code + '. ';
                     const html = `
                         <div style="text-align: center;">
-                            <img alt="Logo Iberoil" src="https://plataforma-iberoil.com/assets/img/iberoil-logo.png" width="200">
-                            <h2>De la R Asesoria en Servicios & Laboratorio, S.A. de C.V.</h2>
+                            <img alt="Logo x" src="https://plataforma-x.com/assets/img/logo.png" width="200">
+                            <h2>S.A. de C.V.</h2>
                             <h1>¡Recordar tu contraseña!</h1>
                             <p>Hemos cambiado tu contraseña provisionalmente por la siguiente: ${code}. 
                             </p>
@@ -131,7 +132,7 @@ Si_user.forgot = (user, connection, next) => {
                     `;
 
                     const message = {
-                        from: 'alertas@plataforma-iberoil.com',
+                        from: 'alertas@plataforma-x.com',
                         to: email,
                         subject: subject,
                         text: mensaje,
@@ -169,12 +170,10 @@ Si_user.login = (email, password, connection, next) => {
     if ( !connection )
         return next('Connection refused');
 
-    const query = connection.query(`SELECT a.nombre as area, idsi_user, usuario, si_user.email, password, si_rol_idsi_rol, super, si_user.baja, p.nombre, e.idempleado, e.horaEntrada, e.horaSalida, c.idcliente FROM si_user 
-                                    LEFT JOIN empleado as e on e.si_user_idsi_user = si_user.idsi_user
-                                    LEFT JOIN area as a  on a.idarea = e.area_idarea
-                                    LEFT JOIN persona as p on p.idpersona =  e.persona_idpersona
-                                    LEFT JOIN cliente as c on c.si_user_idsi_user = si_user.idsi_user
-                                    WHERE si_user.email = ? AND status != 'SUSPENDIDO' HAVING baja IS NULL OR baja = false`, 
+    const query = connection.query(`SELECT idsi_user, usuario, si_user.email, password, si_rol_idsi_rol, super, si_user.baja 
+                                    FROM si_user 
+                                    WHERE si_user.email = ? AND status != 'SUSPENDIDO' 
+                                    HAVING baja IS NULL OR baja = false`, 
     [email], (error, result) => {
 
 
@@ -194,7 +193,7 @@ Si_user.login = (email, password, connection, next) => {
                     user.password = null;
                     
                     if (!_super) {
-                        _query = `SELECT m.nombre, p.acceso, m.baja, p.writeable, p.deleteable, p.readable, p.updateable, p.write_own, p.delete_own, p.read_own, p.update_own, p.descarga, p.impresion, p.carga, p.embarque, p.cadena
+                        _query = `SELECT m.nombre, p.acceso, m.baja, p.writeable, p.deleteable, p.readable, p.updateable, p.write_own, p.delete_own, p.read_own, p.update_own
                                     FROM si_user as u 
                                     INNER JOIN si_rol as r ON r.idsi_rol = u.si_rol_idsi_rol 
                                     INNER JOIN si_permiso as p ON p.si_rol_idsi_rol = r.idsi_rol 
@@ -219,11 +218,6 @@ Si_user.login = (email, password, connection, next) => {
                                 element.delete_own = 0;
                                 element.read_own = 0;
                                 element.update_own = 0;
-                                element.descarga = 1;
-                                element.impresion = 1;
-                                element.carga = 1; 
-                                element.embarque = 1; 
-                                element.cadena = 1; 
                             });
                         }
 
@@ -274,9 +268,7 @@ Si_user.login = (email, password, connection, next) => {
                                                                 email: user.email,
                                                                 si_rol_idsi_rol: user.si_rol_idsi_rol,
                                                                 nombre: user.nombre,
-                                                                idempleado: user.idempleado || 0,
                                                                 idcliente: user.idcliente || 0,
-                                                                area: user.area || '',
                                                                 super: user.super || 0,
                                                                 idsesion: resultSesion[0].idsesion
                                                             }
@@ -295,7 +287,6 @@ Si_user.login = (email, password, connection, next) => {
                                                                 idrol: user.si_rol_idsi_rol,
                                                                 email: user.email,
                                                                 user: user,
-                                                                idempleado: user.idempleado || 0,
                                                                 idcliente: user.idcliente || 0,
                                                                 nombre: user.nombre,
                                                                 idsesion: resultSesion[0].idsesion
@@ -395,36 +386,6 @@ Si_user.allRolClientes = (created_by, connection, next) => {
     });
 };
 
-Si_user.allRolEmpleados = (created_by, connection, next) => {
-    if( !connection )
-        return next('Connection refused');
-
-    let query = '';
-    let keys = [];
-    if (created_by) {
-        query = `SELECT si_user.*, si_rol.nombre as si_rol_si_rol_idsi_rol, sesion.estado as sesionestado, sesion.modified_at as sesionmodifiedat FROM si_user 
-        INNER JOIN si_rol on si_rol.idsi_rol = si_user.si_rol_idsi_rol 
-        LEFT JOIN sesion on sesion.si_user_idsi_user = si_user.idsi_user
-        WHERE created_by = ? AND si_rol.nombre != 'CLIENTE' AND si_rol.nombre != 'ADMINISTRADOR' HAVING si_user.baja IS NULL OR si_user.baja = false`;
-        keys = [created_by];
-    } else {
-        query = `SELECT si_user.*, si_rol.nombre as si_rol_si_rol_idsi_rol, sesion.estado as sesionestado, sesion.modified_at as sesionmodifiedat FROM si_user 
-        INNER JOIN si_rol on si_rol.idsi_rol = si_user.si_rol_idsi_rol 
-        LEFT JOIN sesion on sesion.si_user_idsi_user = si_user.idsi_user
-        WHERE si_rol.nombre != 'CLIENTE' AND si_rol.nombre != 'ADMINISTRADOR' HAVING si_user.baja IS NULL OR si_user.baja = false`;
-        keys = [];
-    }
-
-    connection.query(query, keys, (error, result) => {
-        if(error) 
-            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leían registros' });
-        else if (result.affectedRows === 0)
-            return next(null, { success: false, result: result, message: 'Solo es posible leer registros propios' });
-        else
-            return next(null, { success: true, result: result, message: 'Si_user leíd@' });
-    });
-};
-
 Si_user.allClientes = (created_by, connection, next) => {
     if( !connection )
         return next('Connection refused');
@@ -442,40 +403,6 @@ Si_user.allClientes = (created_by, connection, next) => {
         query = `SELECT si_user.*, si_rol.nombre as si_rol_si_rol_idsi_rol, sesion.estado as sesionestado, sesion.modified_at as sesionmodifiedat FROM si_user 
         INNER JOIN si_rol on si_rol.idsi_rol = si_user.si_rol_idsi_rol 
         INNER JOIN cliente as c ON c.si_user_idsi_user = si_user.idsi_user
-        LEFT JOIN sesion on sesion.si_user_idsi_user = si_user.idsi_user
-        HAVING si_user.baja IS NULL OR si_user.baja = false`;
-        keys = [];
-    }
-
-    connection.query(query, keys, (error, result) => {
-        if(error) 
-            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leían registros' });
-        else if (result.affectedRows === 0)
-            return next(null, { success: false, result: result, message: 'Solo es posible leer registros propios' });
-        else
-            return next(null, { success: true, result: result, message: 'Si_user leíd@' });
-    });
-};
-
-Si_user.allEmpleados = (created_by, connection, next) => {
-    if( !connection )
-        return next('Connection refused');
-
-    let query = '';
-    let keys = [];
-    if (created_by) {
-        query = `SELECT si_user.*, si_rol.nombre as si_rol_si_rol_idsi_rol, sesion.estado as sesionestado, sesion.modified_at as sesionmodifiedat, CONCAT(persona.nombre, " ", persona.apellidoPaterno, " ", persona.apellidoMaterno) as persona_idpersona FROM si_user 
-        INNER JOIN si_rol on si_rol.idsi_rol = si_user.si_rol_idsi_rol 
-        INNER JOIN empleado as e ON e.si_user_idsi_user = si_user.idsi_user
-        INNER JOIN persona ON persona.idpersona = e.persona_idpersona
-        LEFT JOIN sesion on sesion.si_user_idsi_user = si_user.idsi_user
-        WHERE created_by = ? HAVING si_user.baja IS NULL OR si_user.baja = false`;
-        keys = [created_by];
-    } else {
-        query = `SELECT si_user.*, si_rol.nombre as si_rol_si_rol_idsi_rol, sesion.estado as sesionestado, sesion.modified_at as sesionmodifiedat, CONCAT(persona.nombre, " ", persona.apellidoPaterno, " ", persona.apellidoMaterno) as persona_idpersona FROM si_user 
-        INNER JOIN si_rol on si_rol.idsi_rol = si_user.si_rol_idsi_rol 
-        INNER JOIN empleado as e ON e.si_user_idsi_user = si_user.idsi_user
-        INNER JOIN persona ON persona.idpersona = e.persona_idpersona
         LEFT JOIN sesion on sesion.si_user_idsi_user = si_user.idsi_user
         HAVING si_user.baja IS NULL OR si_user.baja = false`;
         keys = [];
