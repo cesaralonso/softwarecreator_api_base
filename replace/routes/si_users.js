@@ -62,40 +62,6 @@ router
             });
         })(req, res, next);
     })
-    .get('/rol-empleados', (req, res, next) => {
-        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
-            if( !auth_data )
-                return next('auth_data refused');
- 
-            permissions.module_permission(auth_data.modules, 'si_user', auth_data.user.super, 'readable', (error, permission) => {
-                if (permission.success) {
-                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
-                    Si_user.allRolEmpleados(created_by, req.mysql, (error, data) => {
-                        return Si_user.response(res, error, data);
-                    })
-                } else {
-                    return Si_user.response(res, error, permission);
-                }
-            });
-        })(req, res, next);
-    })
-    .get('/empleados', (req, res, next) => {
-        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
-            if( !auth_data )
-                return next('auth_data refused');
- 
-            permissions.module_permission(auth_data.modules, 'si_user', auth_data.user.super, 'readable', (error, permission) => {
-                if (permission.success) {
-                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
-                    Si_user.allEmpleados(created_by, req.mysql, (error, data) => {
-                        return Si_user.response(res, error, data);
-                    })
-                } else {
-                    return Si_user.response(res, error, permission);
-                }
-            });
-        })(req, res, next);
-    })
     .get('/si_rol/:si_rol', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             if( !auth_data )
@@ -197,39 +163,17 @@ router
             });
         })(req, res, next);
     })
-
     .get('/verificar/:email/:code', (req, res, next) => {
-       /* passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
-            if( !auth_data )
-                return next('auth_data refused');*/
- 
-            Si_user.verifica(req.params.email, req.params.code, req.mysql, (error, data) => {
-                return Si_user.response(res, error, data);
-            });
-
-        /*})(req, res, next);*/
+        Si_user.verifica(req.params.email, req.params.code, req.mysql, (error, data) => {
+            return Si_user.response(res, error, data);
+        });
     })
-
-    
-
     .post('/forgot', (req, res, next) => {
-        /*passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
-            if( !auth_data )
-                return next('auth_data refused');*/
- 
-            /*permissions.module_permission(auth_data.modules, 'si_user', auth_data.user.super, 'writeable', (error, permission) => {
-                if (permission.success) {*/
-                    const _si_user = req.body;
-                    Si_user.forgot( _si_user, req.mysql, (error, data) =>{
-                        return Si_user.response(res, error, data);
-                    });
-                /*} else {
-                    return Si_user.response(res, error, permission);
-                }*/
-            /*});
-        })(req, res, next);*/
+        const _si_user = req.body;
+        Si_user.forgot( _si_user, req.mysql, (error, data) =>{
+            return Si_user.response(res, error, data);
+        });
     })
-
     .post('/', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             if( !auth_data )
