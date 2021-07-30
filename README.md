@@ -12,3 +12,7 @@ And here is a sample output of this command:
 
 
 {"publicKey":"BIwiR0uzpJEUxcucsfmwOW0svoztNp65fhT4Bq2dM1-7Y9NOacTMuUpZ5EmPpQ-fhgX-X0sdQFn7zDrLjnnmMLs","privateKey":"XJz3yRTP07U2R_cXloXITyC2K9iY2DQRKYhCyh2WJV0"}
+
+
+bcrypt solution:
+npm uninstall bcrypt && npm i bcrypt
