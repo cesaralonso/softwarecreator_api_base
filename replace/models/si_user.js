@@ -1,4 +1,3 @@
-// const connection = require('../config/db-connection');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const jwt = require('jsonwebtoken');
