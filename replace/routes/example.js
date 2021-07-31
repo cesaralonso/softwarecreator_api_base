@@ -821,6 +821,129 @@ router
                 }
             });
         })(req, res, next);
+    })
+
+    
+    .post('/evidencia', upload.single('evidencia'), (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            if (!auth_data) {
+                return next('auth_data refused');
+            }
+            permissions.module_permission(auth_data.modules, 'cadenapruebaestado', auth_data.user.super, 'writeable', (error, permission) => {
+                if (permission.success) {
+                    const _cadenapruebaestado = req.body;
+                    _cadenapruebaestado.created_by = auth_data.user.idsi_user;
+
+                    
+                    if (req.file && req.file.filename) {
+                        const _url = process.env.HOST || req.protocol + '://' + req.get('host');
+                        const evidencia =  _url + '/clientes/muestras/' + req.file.filename;
+                        _cadenapruebaestado.evidencia = evidencia;
+                    }
+
+                    Cadenapruebaestado.insert( _cadenapruebaestado, req.mysql, (error, dataPost) => { 
+
+                        if (error) {
+                            console.error(error);
+                            return next('Error');
+                        }
+
+                        const idCadenaprueba = dataPost.result.identificadorMuestra;
+
+                        // GUARDAR EN LOGS
+                        const logs = {
+                            si_modulo_idsi_modulo: 41, // cadenapruebaestados
+                            accion:  `Registro creado: ${dataPost.result.insertId}, CadenaPrueba: ${idCadenaprueba}, Proyecto: ${dataPost.result.proyecto_idproyecto}`,
+                            created_by: auth_data.user.idsi_user
+                        };
+
+                        Logs.insert(logs, req.mysql, (error, data) => {
+                            console.log('Logs actualizado');
+                        });
+
+                        const titulo = `LA MUESTRA CON IDENTIFICADOR: ${idCadenaprueba} DEL PROYECTO FOLIO: ${dataPost.result.proyecto_idproyecto} HA CAMBIADO DE ESTADO.`;
+                        const mensaje = `LA MUESTRA CON IDENTIFICADOR: ${idCadenaprueba} DEL PROYECTO FOLIO: ${dataPost.result.proyecto_idproyecto} HA CAMBIADO DE ESTADO, POR FAVOR ACCEDA AL SISTEMA PARA REVISAR SU ESTADO.`;
+                        const enlace = "pages/cadenapruebaestados/identificadormuestra/" + idCadenaprueba;
+
+                        const notificar = [
+                            titulo,
+                            mensaje,
+                            enlace
+                        ];
+
+                        // PRIMERO, SI ES UNA AVERIA Y TIENE UNA ACCIÓN
+                        if ( _cadenapruebaestado.estadoactividad_idestadoactividad === 9  && _cadenapruebaestado.accion !== '' && _cadenapruebaestado.accion !== 'NA' ) {
+
+                            if (dataPost.result.notificarArea || dataPost.result.notificarUsuarios) {
+                                if (dataPost.result.notificarUsuarios && dataPost.result.notificarArea ) {
+                                    // ENVIAR A ALERTA NOTIFICARPORAREA
+                                    Alerta.notificarPorArea(dataPost.result, notificar, req.mysql, (error, data) => {
+                                        // ENVIAR A ALERTA NOTIFICARPORAREA
+                                        Alerta.notificarPorUsuarios(dataPost.result, notificar, req.mysql, (_error, _data) => {
+                                            return Cadenapruebaestado.response(res, _error, dataPost);
+                                        });
+                                    });
+                                } else if (dataPost.result.notificarUsuarios && !dataPost.result.notificarArea) {
+                                    // ENVIAR A ALERTA NOTIFICARPORAREA
+                                    Alerta.notificarPorUsuarios(dataPost.result, notificar, req.mysql, (error, data) => {
+                                        return Cadenapruebaestado.response(res, error, dataPost);
+                                    });
+                                } else if (!dataPost.result.notificarUsuarios && dataPost.result.notificarArea) {
+                                    // ENVIAR A ALERTA NOTIFICARPORAREA
+                                    Alerta.notificarPorArea(dataPost.result, notificar, req.mysql, (error, data) => {
+                                        return Cadenapruebaestado.response(res, error, dataPost);
+                                    });
+                                } 
+                            } else {
+
+                                // notificar solo a cliente
+                                if (dataPost.result.cliente_email && dataPost.result.cliente_idsi_user) {
+                                    const _alerta = {
+                                        emailDestinatario: dataPost.result.cliente_email, 
+                                        mensaje:  mensaje,
+                                        titulo: titulo,
+                                        enlace: enlace,
+                                        si_user_idsi_user: dataPost.result.cliente_idsi_user,
+                                        tipoAlerta: 'ALERTA'
+                                    };
+
+                                    Alerta.insert(_alerta, req.mysql, (_error, _data) => {
+                                        return Cadenapruebaestado.response(res, _error, dataPost);
+                                    });
+                                } else {
+                                    return Cadenapruebaestado.response(res, error, dataPost);
+                                }
+
+                            }
+
+                        } else {
+
+                            // notificar solo a cliente
+                            if (dataPost.result.cliente_email && dataPost.result.cliente_idsi_user) {
+                                const _alerta = {
+                                    emailDestinatario: dataPost.result.cliente_email, 
+                                    mensaje:  mensaje,
+                                    titulo: titulo,
+                                    enlace: enlace,
+                                    si_user_idsi_user: dataPost.result.cliente_idsi_user,
+                                    tipoAlerta: 'ALERTA'
+                                };
+
+                                Alerta.insert(_alerta, req.mysql, (_error, _data) => {
+                                    return Cadenapruebaestado.response(res, _error, dataPost);
+                                });
+                            } else {
+                                return Cadenapruebaestado.response(res, error, dataPost);
+                            }
+
+                        }
+
+                    });
+                } else {
+                    return Cadenapruebaestado.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
     });
 
 module.exports = router;
