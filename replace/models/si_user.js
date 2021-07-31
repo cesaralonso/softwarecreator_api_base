@@ -4,15 +4,18 @@ const jwt = require('jsonwebtoken');
 const mySecretPass = process.env.SECRET_PASSWORD;
 const nodemailer = require('nodemailer');
 
+const dotenv = require('dotenv');
+dotenv.config();
+
+// NODE MAILER CONFIGURATION
 let transport = nodemailer.createTransport({
-    host: 'rs6-nyc.serverhostgroup.com',
-    port: 465,
+    host: process.env.NODEMAILER_HOST,
+    port: process.env.NODEMAILER_PORT,
     auth: {
-       user: 'clientes@plataforma-X.com',
-       pass: 'XXXXXXXXXXX'
+       user: process.env.NODEMAILER_AUTH_USER,
+       pass: process.env.NODEMAILER_AUTH_PASS
     }
 });
-
 
 
 const Si_user = {};
@@ -43,15 +46,15 @@ Si_user.insert = (user, connection, next) => {
 
             // EMAIL
             const email = user.email;
-            const subject = 'Confirma tu correo | x Plataforma Clientes';
-            const mensaje = '¡Bienvenido a x Plataforma Clientes!, debes ingresar a la siguiente liga para confirmar tu correo en un lapso menor a 30 minutos a partir de la creación del usuario. Liga: https://plataforma-x.com/ingresa-tu-codigo-registro.php?code=' + code;
+            const subject = `Confirma tu correo | ${process.env.APP_NOMBRE}`;
+            const mensaje = `¡Bienvenido a ${process.env.APP_NOMBRE}!, debes ingresar a la siguiente liga para confirmar tu correo en un lapso menor a 30 minutos a partir de la creación del usuario. Liga: ${process.env.APP_PRODURL}/ingresa-tu-codigo-registro.php?code=${code}`;
             const html = `
                 <div style="text-align: center;">
-                    <img alt="Logo x" src="https://plataforma-x.com/assets/img/logo.png" width="200">
-                    <h2>S.A. de C.V.</h2>
+                    <img alt="Logo" src="${process.env.APP_PRODURL}/assets/img/logo.png" width="200">
+                    <h2>${process.env.APP_RAZONSOCIAL}</h2>
                     <h1>¡Bienvenido a Plataforma Clientes!</h1>
                     <p>Debes ingresar a la siguiente
-                    <a href="https://plataforma-x.com/ingresa-tu-codigo-registro.php?code=${code}&email=${email}">liga (https://plataforma-x.com/ingresa-tu-codigo-registro.php?code=${code}&email=${email})</a> para confirmar tu correo en un lapso menor a 30 minutos a partir de la creación del usuario.
+                    <a href="${process.env.APP_PRODURL}/ingresa-tu-codigo-registro.php?code=${code}&email=${email}">liga (${process.env.APP_PRODURL}/ingresa-tu-codigo-registro.php?code=${code}&email=${email})</a> para confirmar tu correo en un lapso menor a 30 minutos a partir de la creación del usuario.
                     </p>
                     <hr>
                     <p>
@@ -61,7 +64,7 @@ Si_user.insert = (user, connection, next) => {
             `;
 
             const message = {
-                from: 'alertas@plataforma-x.com',
+                from: process.env.NODEMAILER_FROM,
                 to: email,
                 subject: subject,
                 text: mensaje,
@@ -114,12 +117,12 @@ Si_user.forgot = (user, connection, next) => {
 
                     // EMAIL
                     const email = user.email;
-                    const subject = 'Recordar tu contraseña | x Plataforma Clientes';
-                    const mensaje = 'Hemos cambiado tu contraseña provisionalmente por la siguiente: ' + code + '. ';
+                    const subject = `Recordar tu contraseña | process.env.APP_NOMBRE`;
+                    const mensaje = `Hemos cambiado tu contraseña provisionalmente por la siguiente: ${code}`;
                     const html = `
                         <div style="text-align: center;">
-                            <img alt="Logo x" src="https://plataforma-x.com/assets/img/logo.png" width="200">
-                            <h2>S.A. de C.V.</h2>
+                            <img alt="Logo" src="${process.env.APP_PRODURL}/assets/img/logo.png" width="200">
+                            <h2>${process.env.APP_RAZONSOCIAL}</h2>
                             <h1>¡Recordar tu contraseña!</h1>
                             <p>Hemos cambiado tu contraseña provisionalmente por la siguiente: ${code}. 
                             </p>
@@ -131,7 +134,7 @@ Si_user.forgot = (user, connection, next) => {
                     `;
 
                     const message = {
-                        from: 'alertas@plataforma-x.com',
+                        from: process.env.NODEMAILER_FROM,
                         to: email,
                         subject: subject,
                         text: mensaje,

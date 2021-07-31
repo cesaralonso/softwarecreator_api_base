@@ -15,7 +15,6 @@ webpush.setVapidDetails(
 );
 
 
-
 const Api = {};
 // Borra una subscripción
 Api.removeSubscription = async (subscription, connection, next) => {
@@ -175,7 +174,7 @@ Api.sendToAllDevicesWebPush = (visita, connection, next) => {
             const notificationPayload = {
                 "notification": {
                     "body" : 'Revisar tu proyecto',
-                    "title": "Alerta nueva",
+                    "title": "Alerta Nueva",
                     "vibrate": [100, 50, 100],
                     "data": {
                         "dateOfArrival": Date.now(),
@@ -184,7 +183,7 @@ Api.sendToAllDevicesWebPush = (visita, connection, next) => {
                     },
                     "actions": [{
                         "action": "explore",
-                        "title": "Ir a IberoilReportes"
+                        "title": "Ir a " + process.env.APP_NOMBRE
                     }]
                 }
             };
@@ -225,9 +224,9 @@ Api.sendToIdusers = (si_users, mensaje, connection, next) => {
             const notificationPayload = {
                 "notification": {
                     "body" : mensaje,
-                    "title": "Alerta Iberoil",
+                    "title": "Alerta",
                     "vibrate": [100, 50, 100],
-                    "icon":  "https://plataforma-iberoil.com/assets/icons/icon-192x192.png",
+                    "icon":  process.env.APP_PRODURL + "/assets/icon/android-icon-192x192.png",
                     "data": {
                         "dateOfArrival": Date.now(),
                         "primaryKey": 1,
@@ -235,7 +234,7 @@ Api.sendToIdusers = (si_users, mensaje, connection, next) => {
                     },
                     "actions": [{
                         "action": "explore",
-                        "title": "Ir a Iberoil Clientes"
+                        "title": "Ir a " + process.env.APP_NOMBRE
                     }]
                 }
             };
