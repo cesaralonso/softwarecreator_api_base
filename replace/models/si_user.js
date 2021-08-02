@@ -52,7 +52,7 @@ Si_user.insert = (user, connection, next) => {
                 <div style="text-align: center;">
                     <img alt="Logo" src="${process.env.APP_PRODURL}/assets/img/logo.png" width="200">
                     <h2>${process.env.APP_RAZONSOCIAL}</h2>
-                    <h1>¡Bienvenido a Plataforma Clientes!</h1>
+                    <h1>¡Bienvenido a  ${process.env.APP_NOMBRE}!</h1>
                     <p>Debes ingresar a la siguiente
                     <a href="${process.env.APP_PRODURL}/ingresa-tu-codigo-registro.php?code=${code}&email=${email}">liga (${process.env.APP_PRODURL}/ingresa-tu-codigo-registro.php?code=${code}&email=${email})</a> para confirmar tu correo en un lapso menor a 30 minutos a partir de la creación del usuario.
                     </p>
@@ -95,10 +95,8 @@ Si_user.forgot = (user, connection, next) => {
     if ( !connection )
         return next('Connection refused');
 
-
         const key = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
         const code = key.substring(0, 8) + key.substring(8, 12) + key.substring(12, 16) + key.substring(16, 20);
-
 
         // Hash password
         bcrypt.hash(code, saltRounds)
@@ -114,59 +112,67 @@ Si_user.forgot = (user, connection, next) => {
                     return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se creaba password provisional.'});
                 else {
 
+                    if (result.result.affectedRows) {
 
-                    // EMAIL
-                    const email = user.email;
-                    const subject = `Recordar tu contraseña | process.env.APP_NOMBRE`;
-                    const mensaje = `Hemos cambiado tu contraseña provisionalmente por la siguiente: ${code}`;
-                    const html = `
-                        <div style="text-align: center;">
-                            <img alt="Logo" src="${process.env.APP_PRODURL}/assets/img/logo.png" width="200">
-                            <h2>${process.env.APP_RAZONSOCIAL}</h2>
-                            <h1>¡Recordar tu contraseña!</h1>
-                            <p>Hemos cambiado tu contraseña provisionalmente por la siguiente: ${code}. 
-                            </p>
-                            <hr>
-                            <p>
-                                <i><strong>Por favor no respondas a este correo.</strong></i>
-                            </p>
-                        </div>
-                    `;
+                        // EMAIL
+                        const email = user.email;
+                        const subject = `Recordar tu contraseña | ${process.env.APP_NOMBRE}`;
+                        const mensaje = `Hemos cambiado tu contraseña provisionalmente por la siguiente: ${code}`;
+                        const html = `
+                            <div style="text-align: center;">
+                                <img alt="Logo" src="${process.env.APP_PRODURL}/assets/img/logo.png" width="200">
+                                <h2>${process.env.APP_RAZONSOCIAL}</h2>
+                                <h1>¡Recordar tu contraseña!</h1>
+                                <p>Hemos cambiado tu contraseña provisionalmente por la siguiente: ${code}. 
+                                </p>
+                                <hr>
+                                <p>
+                                    <i><strong>Por favor no respondas a este correo.</strong></i>
+                                </p>
+                            </div>
+                        `;
 
-                    const message = {
-                        from: process.env.NODEMAILER_FROM,
-                        to: email,
-                        subject: subject,
-                        text: mensaje,
-                        html: html
-                    };
+                        const message = {
+                            from: process.env.NODEMAILER_FROM,
+                            to: email,
+                            subject: subject,
+                            text: mensaje,
+                            html: html
+                        };
 
-                    transport.sendMail(message, function(err, info) {
-                        if (err) {
-                            console.log('sendMail err', err)
-                            return next( err );
-                        } else {
-                            console.log('sendMail info', info);
+                        transport.sendMail(message, function(err, info) {
+                            if (err) {
+                                console.log('sendMail err', err)
+                                return next( err );
+                            } else {
+                                console.log('sendMail info', info);
 
-                            // RETURN
-                            return next( null, {
-                                success: true,
-                                result: result,
-                                message: `¡Se ha enviado un correo a ${email} que debes revisar para continuar!.`
-                            });
+                                // RETURN
+                                return next( null, {
+                                    success: true,
+                                    result: result,
+                                    message: `¡Se ha enviado un correo a ${email} que debes revisar para continuar!.`
+                                });
 
 
-                        }
-                    });
+                            }
+                        });
+
+                    } else {
+
+                        // RETURN
+                        return next( null, {
+                            success: true,
+                            result: {},
+                            message: `¡Correo no encontrado!.`
+                        });
+
+                    }
 
                 }
             });
-
-
         });
-
 }
-
 
 Si_user.login = (email, password, connection, next) => {
     if ( !connection )
@@ -223,7 +229,7 @@ Si_user.login = (email, password, connection, next) => {
                             });
                         }
 
-                        // EN PRUEBA, PASAR DE PENDIENTE A ACTIVO UN USUARIO
+                        // PASAR DE PENDIENTE A ACTIVO UN USUARIO
                         let querySesion = `UPDATE si_user SET status = 'ACTIVO'  WHERE idsi_user = ? AND status = 'PENDIENTE'`;
                         let keys = [user.idsi_user];
 
@@ -233,8 +239,7 @@ Si_user.login = (email, password, connection, next) => {
                                 return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se modificaba el estado de usuario'});
                             else {
 
-
-                                // EN PRUEBA, INSERTAR AQUÍ MISMO LA SESIÓN
+                                // INSERTAR AQUÍ MISMO LA SESIÓN
                                 querySesion = 'INSERT INTO sesion SET si_user_idsi_user = ?, estado=\'CONECTADO\' ON DUPLICATE KEY UPDATE si_user_idsi_user = ?, estado=\'CONECTADO\'';
                                 keys = [user.idsi_user, user.idsi_user];
 
@@ -244,7 +249,6 @@ Si_user.login = (email, password, connection, next) => {
                                         return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se creaba el registro de sesión'});
                                     else {
 
-    
                                         // TOMAR ID DE SESIÓN...
                                         querySesion = 'SELECT idsesion FROM sesion WHERE si_user_idsi_user = ?';
                                         keys = [user.idsi_user];
@@ -255,62 +259,52 @@ Si_user.login = (email, password, connection, next) => {
                                                 return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se creaba el registro de sesión'});
                                             else {
 
+                                                // INSERTAR SESIÓN ESTADO
+                                                querySesion = `INSERT INTO sesionestado SET sesion_idsesion = ?, estado = 'CONECTADO'`;
+                                                connection.query(querySesion, [resultSesion[0].idsesion], (error, sesion_estado) => {
 
-                                                    // INSERTAR SESIÓN ESTADO
-                                                    querySesion = `INSERT INTO sesionestado SET sesion_idsesion = ?, estado = 'CONECTADO'`;
-                                                    connection.query(querySesion, [resultSesion[0].idsesion], (error, sesion_estado) => {
+                                                    if(error) 
+                                                        return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se actualizaba el registro de sesion estado'});
+                                                    else {
 
-                                                        if(error) 
-                                                            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se actualizaba el registro de sesion estado'});
-                                                        else {
-
-                                                            const payload = {
-                                                                idsi_user: user.idsi_user,
-                                                                usuario: user.usuario,
-                                                                email: user.email,
-                                                                si_rol_idsi_rol: user.si_rol_idsi_rol,
-                                                                nombre: user.nombre,
-                                                                idcliente: user.idcliente || 0,
-                                                                super: user.super || 0,
-                                                                idsesion: resultSesion[0].idsesion
-                                                            }
-
-                                                            // Generate token
-                                                            const token = jwt.sign(payload, mySecretPass, {
-                                                                expiresIn: 60 * 60 * 24 * 365
-                                                            });
-
-                                                            return next( null, {
-                                                                success: true,
-                                                                message: 'Has iniciado sesión correctamente',
-                                                                token: token,
-                                                                modules: modules,
-                                                                iduser: user.idsi_user,
-                                                                idrol: user.si_rol_idsi_rol,
-                                                                email: user.email,
-                                                                user: user,
-                                                                idcliente: user.idcliente || 0,
-                                                                nombre: user.nombre,
-                                                                idsesion: resultSesion[0].idsesion
-                                                            });
-
-
-
+                                                        const payload = {
+                                                            idsi_user: user.idsi_user,
+                                                            usuario: user.usuario,
+                                                            email: user.email,
+                                                            si_rol_idsi_rol: user.si_rol_idsi_rol,
+                                                            nombre: user.nombre,
+                                                            idcliente: user.idcliente || 0,
+                                                            super: user.super || 0,
+                                                            idsesion: resultSesion[0].idsesion
                                                         }
-                                                    });
-                                                }
 
+                                                        // Generate token
+                                                        const token = jwt.sign(payload, mySecretPass, {
+                                                            expiresIn: 60 * 60 * 24 * 365
+                                                        });
+
+                                                        return next( null, {
+                                                            success: true,
+                                                            message: 'Has iniciado sesión correctamente',
+                                                            token: token,
+                                                            modules: modules,
+                                                            iduser: user.idsi_user,
+                                                            idrol: user.si_rol_idsi_rol,
+                                                            email: user.email,
+                                                            user: user,
+                                                            idcliente: user.idcliente || 0,
+                                                            nombre: user.nombre,
+                                                            idsesion: resultSesion[0].idsesion
+                                                        });
+
+                                                    }
+                                                });
+                                            }
                                         });
-
                                     }
-                                        
                                 });
-
                             }
-                                
                         });
-
-
                     });
                 } else
                     return next(null, {
@@ -326,7 +320,6 @@ Si_user.login = (email, password, connection, next) => {
         }
     });
 }
-
 
 Si_user.all = (created_by, connection, next) => {
     if( !connection )
