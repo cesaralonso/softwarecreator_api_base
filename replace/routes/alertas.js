@@ -38,7 +38,7 @@ router
                     // DEBO ENVIAR EL CREATEDBY y idsi_user COMO IDENTIFICADOR DE QUEIN SOY PARA SABER COMO ORDENAR ENVIADAS Y RECIBIDAS......
                     const ami = auth_data.user.idsi_user;
 
-                    Alerta.all(created_by, ami, req.mysql, (error, data) => {
+                    Alerta.all(created_by, req.mysql, (error, data) => {
                         return Alerta.response(res, error, data);
                     })
                 } else {
