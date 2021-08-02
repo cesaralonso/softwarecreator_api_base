@@ -35,11 +35,31 @@ router
                 if (permission.success) {
                     const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
 
-
                     // DEBO ENVIAR EL CREATEDBY y idsi_user COMO IDENTIFICADOR DE QUEIN SOY PARA SABER COMO ORDENAR ENVIADAS Y RECIBIDAS......
                     const ami = auth_data.user.idsi_user;
 
                     Alerta.all(created_by, ami, req.mysql, (error, data) => {
+                        return Alerta.response(res, error, data);
+                    })
+                } else {
+                    return Alerta.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+    .get('/separadas', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            if( !auth_data )
+                return next('auth_data refused');
+ 
+            permissions.module_permission(auth_data.modules, 'alerta', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+
+                    // DEBO ENVIAR EL CREATEDBY y idsi_user COMO IDENTIFICADOR DE QUEIN SOY PARA SABER COMO ORDENAR ENVIADAS Y RECIBIDAS......
+                    const ami = auth_data.user.idsi_user;
+
+                    Alerta.allSeparadas(created_by, ami, req.mysql, (error, data) => {
                         return Alerta.response(res, error, data);
                     })
                 } else {

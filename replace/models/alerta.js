@@ -94,7 +94,31 @@ Alerta.findFromTo = (fechaDesde, fechaHasta, created_by, ami, connection, next) 
     })
 }
 
-Alerta.all = (created_by, ami, connection, next) => {
+Alerta.all = (created_by, connection, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = `SELECT urem.usuario as remitente, alerta.*, udes.usuario as empleado_empleado_idempleado , udes.email as emailDestinatario, urem.email as emailRemitente, alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM alerta INNER JOIN si_user as urem ON urem.idsi_user = alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = alerta.si_user_idsi_user WHERE alerta.created_by = ?  HAVING alerta.baja IS NULL OR alerta.baja = false`;
+        keys = [created_by];
+    } else {
+        query = `SELECT urem.usuario as remitente, alerta.*, udes.usuario as empleado_empleado_idempleado , udes.email as emailDestinatario, urem.email as emailRemitente, alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM alerta INNER JOIN si_user as urem ON urem.idsi_user = alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = alerta.si_user_idsi_user HAVING alerta.baja IS NULL OR alerta.baja = false`;
+        keys = [];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error) 
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leían registros' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible leer registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Folio leíd@' });
+    });
+};
+
+Alerta.allSeparadas = (created_by, ami, connection, next) => {
     if( !connection )
         return next('Connection refused');
 

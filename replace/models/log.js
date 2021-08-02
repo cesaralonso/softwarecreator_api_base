@@ -7,10 +7,10 @@ Log.findByIdSi_modulo = (idSi_modulo, created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = `SELECT log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as si_user_si_user_idsi_user FROM log INNER JOIN si_user as _si_user ON _si_user.idsi_user = log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = log.si_modulo_idsi_modulo   WHERE log.si_modulo_idsi_modulo = ? AND log.created_by = ? HAVING log.baja IS NULL OR log.baja = false`;
+        query = `SELECT log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM log INNER JOIN si_user as _si_user ON _si_user.idsi_user = log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = log.si_modulo_idsi_modulo   WHERE log.si_modulo_idsi_modulo = ? AND log.created_by = ? HAVING log.baja IS NULL OR log.baja = false`;
         keys = [idSi_modulo, created_by];
     } else {
-        query = `SELECT log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as si_user_si_user_idsi_user FROM log INNER JOIN si_user as _si_user ON _si_user.idsi_user = log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = log.si_modulo_idsi_modulo   WHERE log.si_modulo_idsi_modulo = ? HAVING log.baja IS NULL OR log.baja = false`;
+        query = `SELECT log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM log INNER JOIN si_user as _si_user ON _si_user.idsi_user = log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = log.si_modulo_idsi_modulo   WHERE log.si_modulo_idsi_modulo = ? HAVING log.baja IS NULL OR log.baja = false`;
         keys = [idSi_modulo];
     }
 
@@ -31,10 +31,10 @@ Log.findFromTo = (fechaDesde, fechaHasta, created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = `SELECT log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as si_user_si_user_idsi_user FROM log INNER JOIN si_user as _si_user ON _si_user.idsi_user = log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = log.si_modulo_idsi_modulo   WHERE log.created_at BETWEEN ? AND ?  log.created_by = ? HAVING log.baja IS NULL OR log.baja = false`;
+        query = `SELECT log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM log INNER JOIN si_user as _si_user ON _si_user.idsi_user = log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = log.si_modulo_idsi_modulo   WHERE log.created_at BETWEEN ? AND ?  log.created_by = ? HAVING log.baja IS NULL OR log.baja = false`;
         keys = [fechaDesde, fechaHasta, created_by];
     } else {
-        query = `SELECT log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as si_user_si_user_idsi_user FROM log INNER JOIN si_user as _si_user ON _si_user.idsi_user = log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = log.si_modulo_idsi_modulo   WHERE log.created_at BETWEEN ? AND ? HAVING log.baja IS NULL OR log.baja = false`;
+        query = `SELECT log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM log INNER JOIN si_user as _si_user ON _si_user.idsi_user = log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = log.si_modulo_idsi_modulo   WHERE log.created_at BETWEEN ? AND ? HAVING log.baja IS NULL OR log.baja = false`;
         keys = [fechaDesde, fechaHasta];
     }
     connection.query(query, keys, (error, result) => {
@@ -54,12 +54,12 @@ Log.all = (created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = `SELECT log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as si_user_si_user_idsi_user FROM log INNER JOIN si_user as _si_user ON _si_user.idsi_user = log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = log.si_modulo_idsi_modulo   
+        query = `SELECT log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM log INNER JOIN si_user as _si_user ON _si_user.idsi_user = log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = log.si_modulo_idsi_modulo   
         WHERE log.created_at >= (DATE_FORMAT(log.created_at, "%Y-%m-01")) AND log.created_by = ? HAVING log.baja IS NULL OR log.baja = false
         ORDER BY created_at DESC`;
         keys = [created_by];
     } else {
-        query = `SELECT log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as si_user_si_user_idsi_user FROM log INNER JOIN si_user as _si_user ON _si_user.idsi_user = log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = log.si_modulo_idsi_modulo   
+        query = `SELECT log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM log INNER JOIN si_user as _si_user ON _si_user.idsi_user = log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = log.si_modulo_idsi_modulo   
         WHERE log.created_at >= (DATE_FORMAT(log.created_at, "%Y-%m-01")) HAVING log.baja IS NULL OR log.baja = false
         ORDER BY created_at DESC`;
         keys = [];
