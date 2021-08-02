@@ -24,7 +24,7 @@ router
                     return Alerta.response(res, error, permission);
                 }
             });
-        })(req, res, next);
+        })(req, res, next); 
     })
     .get('/', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {

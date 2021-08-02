@@ -42,7 +42,7 @@ Si_user.insert = (user, connection, next) => {
                     });
                 } else
                     return next({ success: false, error: error });
-            }
+            }   
 
             // EMAIL
             const email = user.email;

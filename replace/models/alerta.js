@@ -183,7 +183,7 @@ Alerta.allSeparadas = (created_by, ami, connection, next) => {
             }, (error) => error ? next(error) : next(null, {
                 'enviadas': result.enviadas,
                 'recibidas': recibidas
-            }) )
+            }) )    
         }
     ],
     (error, result) => {

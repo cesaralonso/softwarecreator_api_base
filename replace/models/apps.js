@@ -14,7 +14,6 @@ webpush.setVapidDetails(
     vapidKeys.privateKey
 );
 
-
 const Api = {};
 // Borra una subscripción
 Api.removeSubscription = async (subscription, connection, next) => {

@@ -26,7 +26,7 @@ router
             Api.sesionPosicion(coords, idsesion, created_by, req.mysql, (error, data) =>{
                 return Api.response(res, error, data);
             });
-        })(req, res, next);
+        })(req, res, next); 
     })
     .post('/cerrar-sesion', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {

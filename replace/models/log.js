@@ -227,6 +227,6 @@ Log.response = (res, error, data) => {
         res.status(500).json(error);
     else
         res.status(200).json(data);
-};
+};  
 
 module.exports = Log;
