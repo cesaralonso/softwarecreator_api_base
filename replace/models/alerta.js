@@ -114,7 +114,7 @@ Alerta.all = (created_by, connection, next) => {
         else if (result.affectedRows === 0)
             return next(null, { success: false, result: result, message: 'Solo es posible leer registros propios' });
         else
-            return next(null, { success: true, result: result, message: 'Folio leíd@' });
+            return next(null, { success: true, result: result, message: 'Alertas leídas' });
     });
 };
 
