@@ -19,42 +19,86 @@ let transport = nodemailer.createTransport({
 
 
 const Si_user = {};
-Si_user.insert = (user, connection, next) => {
+
+
+
+
+
+
+Si_user.cambiaPassword = (email, code, user, connection, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    // VERIFICA PASSWORDS IGUALES
+    if (user.password && user.passwordRe && user.password === user.passwordRe) {
+
+        let query = ``;
+        let keys = [];
+        query = `SELECT EXISTS(SELECT 1 FROM si_user WHERE email = ? AND code = ?) AS exist`;
+        keys = [email, code];
+    
+        connection.query(query, keys, (error, result) => {
+            if(error) 
+                return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leían registros de usuarios' });
+            else {
+    
+                // Hash password
+                bcrypt.hash(user.password, saltRounds)
+                .then( hash => {
+                    user.password = hash;
+
+                    // ACTUALIZA PASSWORD
+                    let querySesion = `UPDATE si_user SET password = ? WHERE email = ? AND code = ? AND status != 'SUSPENDIDO'`;
+                    let keys = [user.password, email, code];
+
+                    connection.query(querySesion, keys, (error, resultUpdate) => {
+                        if(error) 
+                            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se modificaba el usuario'});
+                        else {
+                            return next(null, { success: true, result: resultUpdate, message: '¡La nueva contraseña ha sido correctamente establecida!.' });
+                        }
+                    });
+
+                })
+                .catch( error => next({ success: false, error: error }) );
+
+            }
+    
+        });
+
+    } else {
+        return next(null, { success: false, result: {email: email, code: code, user: user}, message: 'Verifique que los nuevos passwords coincidan.' });
+    }
+};
+
+Si_user.forgotRenewPassword = (email, connection, next) => {
     if ( !connection )
         return next('Connection refused');
-    // Hash password
-    bcrypt.hash(user.password, saltRounds)
-    .then( hash => {
-        user.password = hash;
-        const key = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-        const code = key.substring(0, 8) + key.substring(8, 12) + key.substring(12, 16) + key.substring(16, 20);
-        user.code = code;
+
+    const query = connection.query(`SELECT code, email
+                                    FROM si_user 
+                                    WHERE email = ? AND status != 'SUSPENDIDO' AND (baja IS NULL OR baja = false)`, 
+    [email], (error, result) => {
+
+        if ( error )
+            return next( error );
+
+        const user =  result[0];
         
-        // Insert into table
-        connection.query('INSERT INTO si_user SET ?', [user], ( error, result ) => {
-            if ( error ) {
-                // WARNING: To take effect, user table must have the email field as unique column
-                if (error.code === 'ER_DUP_ENTRY') {
-                    return next( null, {
-                        success: false,
-                        error: error,
-                        message: 'Este email ya esta en uso'
-                    });
-                } else
-                    return next({ success: false, error: error });
-            }   
+        if ( user ) {
 
             // EMAIL
             const email = user.email;
-            const subject = `Confirma tu correo | ${process.env.APP_NOMBRE}`;
-            const mensaje = `¡Bienvenido a ${process.env.APP_NOMBRE}!, debes ingresar a la siguiente liga para confirmar tu correo en un lapso menor a 30 minutos a partir de la creación del usuario. Liga: ${process.env.APP_PRODURL}/ingresa-tu-codigo-registro.php?code=${code}`;
+            const code = user.code;
+            const subject = `Renueva tu contraseña | ${process.env.APP_NOMBRE}`;
+            const mensaje = `¡Renueva tu contraseña en ${process.env.APP_NOMBRE}!, debes ingresar a la siguiente liga para confirmar tu correo en un lapso menor a 30 minutos a partir de la creación del usuario. Liga: ${process.env.APP_PRODURL}/renueva-tu-password.php?code=${code}&email=${email}`;
             const html = `
                 <div style="text-align: center;">
-                    <img alt="Logo" src="${process.env.APP_PRODURL}/assets/img/logo.png" width="200">
-                    <h2>${process.env.APP_RAZONSOCIAL}</h2>
-                    <h1>¡Bienvenido a  ${process.env.APP_NOMBRE}!</h1>
+                    <img alt="Logo ${process.env.APP_NOMBRE}" src="${process.env.APP_PRODURL}/assets/img/logo.png" width="200">
+                    <h2>${process.env.APP_NOMBRE}</h2>
+                    <h1>¡Renueva tu contraseña en ${process.env.APP_NOMBRE}!</h1>
                     <p>Debes ingresar a la siguiente
-                    <a href="${process.env.APP_PRODURL}/ingresa-tu-codigo-registro.php?code=${code}&email=${email}">liga (${process.env.APP_PRODURL}/ingresa-tu-codigo-registro.php?code=${code}&email=${email})</a> para confirmar tu correo en un lapso menor a 30 minutos a partir de la creación del usuario.
+                        <a href="${process.env.APP_PRODURL}/renueva-tu-password.php?code=${code}&email=${email}">liga (${process.env.APP_PRODURL}/renueva-tu-password.php?code=${code}&email=${email})</a> para renovar tu contraseña.
                     </p>
                     <hr>
                     <p>
@@ -74,21 +118,26 @@ Si_user.insert = (user, connection, next) => {
             transport.sendMail(message, function(err, info) {
                 if (err) {
                     console.log('sendMail err', err)
-                    return next( err );
+                    return next(null, { success: false, result: err, message: 'No se pudo enviar el correo al usuario.' });
                 } else {
                     console.log('sendMail info', info);
+                    
+                    // RETURN
+                    return next( null, {
+                        success: true,
+                        result: result,
+                        message: `¡Solicitud de cambio de contraseña exitosa!, un email con instrucciones para continuar se ha enviado al correo ${email}.`
+                    });
                 }
             });
 
-            // RETURN
-            return next( null, {
-                success: true,
-                result: result,
-                message: `¡Registro exitoso!, un email con código de confirmación se ha enviado al correo ${email}.`
-            });
-        })
-    })
-    .catch( error => next({ success: false, error: error }) );
+        } else {
+            return next(null, {
+                success: false,
+                message: 'El email no se encuentra.'
+            })
+        }
+    });
 }
 
 Si_user.forgot = (user, connection, next) => {
@@ -172,6 +221,78 @@ Si_user.forgot = (user, connection, next) => {
                 }
             });
         });
+}
+
+Si_user.insert = (user, connection, next) => {
+    if ( !connection )
+        return next('Connection refused');
+    // Hash password
+    bcrypt.hash(user.password, saltRounds)
+    .then( hash => {
+        user.password = hash;
+        const key = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        const code = key.substring(0, 8) + key.substring(8, 12) + key.substring(12, 16) + key.substring(16, 20);
+        user.code = code;
+        
+        // Insert into table
+        connection.query('INSERT INTO si_user SET ?', [user], ( error, result ) => {
+            if ( error ) {
+                // WARNING: To take effect, user table must have the email field as unique column
+                if (error.code === 'ER_DUP_ENTRY') {
+                    return next( null, {
+                        success: false,
+                        error: error,
+                        message: 'Este email ya esta en uso'
+                    });
+                } else
+                    return next({ success: false, error: error });
+            }   
+
+            // EMAIL
+            const email = user.email;
+            const subject = `Confirma tu correo | ${process.env.APP_NOMBRE}`;
+            const mensaje = `¡Bienvenido a ${process.env.APP_NOMBRE}!, debes ingresar a la siguiente liga para confirmar tu correo en un lapso menor a 30 minutos a partir de la creación del usuario. Liga: ${process.env.APP_PRODURL}/ingresa-tu-codigo-registro.php?code=${code}`;
+            const html = `
+                <div style="text-align: center;">
+                    <img alt="Logo" src="${process.env.APP_PRODURL}/assets/img/logo.png" width="200">
+                    <h2>${process.env.APP_RAZONSOCIAL}</h2>
+                    <h1>¡Bienvenido a  ${process.env.APP_NOMBRE}!</h1>
+                    <p>Debes ingresar a la siguiente
+                    <a href="${process.env.APP_PRODURL}/ingresa-tu-codigo-registro.php?code=${code}&email=${email}">liga (${process.env.APP_PRODURL}/ingresa-tu-codigo-registro.php?code=${code}&email=${email})</a> para confirmar tu correo en un lapso menor a 30 minutos a partir de la creación del usuario.
+                    </p>
+                    <hr>
+                    <p>
+                        <i><strong>Por favor no respondas a este correo.</strong></i>
+                    </p>
+                </div>
+            `;
+
+            const message = {
+                from: process.env.NODEMAILER_FROM,
+                to: email,
+                subject: subject,
+                text: mensaje,
+                html: html
+            };
+
+            transport.sendMail(message, function(err, info) {
+                if (err) {
+                    console.log('sendMail err', err)
+                    return next( err );
+                } else {
+                    console.log('sendMail info', info);
+                }
+            });
+
+            // RETURN
+            return next( null, {
+                success: true,
+                result: result,
+                message: `¡Registro exitoso!, un email con código de confirmación se ha enviado al correo ${email}.`
+            });
+        })
+    })
+    .catch( error => next({ success: false, error: error }) );
 }
 
 Si_user.login = (email, password, connection, next) => {

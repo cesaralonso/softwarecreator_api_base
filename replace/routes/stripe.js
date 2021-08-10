@@ -9,7 +9,7 @@ const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const host = 'https://plataforma-kanulki.com';
+const host = process.env.APP_PRODURL;
 // Set your secret key. Remember to switch to your live secret key in production!
 // See your keys here: https://dashboard.stripe.com/account/apikeys
 const Stripe = require('stripe');
@@ -17,7 +17,7 @@ const stripe = Stripe(process.env.STRIPE_SK);
 
 
 // Find your endpoint's secret in your Dashboard's webhook settings
-// https://plataforma-kanulki.com/api/stripe/payment_intent_succeeded
+// https://plataforma-x.com/api/stripe/payment_intent_succeeded
 const endpointSecret = process.env.ENDPOINT_SECRET;
 
 
@@ -113,7 +113,7 @@ const fulfillOrder = (session, req, res) => {
                         const _alerta = {
                             emailDestinatario: dataSi_user.result[0].email,
                             mensaje: `¡En Hora Buena!, has hecho un pago exitoso para la liquidación con folio: ${_liquidacion.idliquidacion}. 
-                                Por favor accesa a Plataforma Kanulki y revisa este pago para descargar tu factura.`,
+                                Por favor accesa a Plataforma y revisa este pago para descargar tu factura.`,
                             titulo: `¡En Hora Buena!, has hecho un pago exitoso.`,
                             tipoalerta_idtipoalerta: 1,
                             si_user_idsi_user: dataSi_user.result[0].idsi_user
@@ -182,7 +182,7 @@ router
     .post('/create-checkout-session', bodyParser.json(), async (req, res) => {
         const _liquidacion = req.body;
         if (!_liquidacion.email) {
-            res.status(400).send('No se enconytró un usuario de plataforma-kanulki.');
+            res.status(400).send('No se enconytró un usuario de plataforma-x.');
         }
         
         const _metadata = {

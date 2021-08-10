@@ -163,6 +163,11 @@ router
             });
         })(req, res, next);
     })
+    .post('/cambia-password/:email/:code', (req, res, next) => {
+        Si_user.cambiaPassword(req.params.email, req.params.code, req.body, req.mysql, (error, data) => {
+            return Si_user.response(res, error, data);
+        });
+    })
     .get('/verificar/:email/:code', (req, res, next) => {
         Si_user.verifica(req.params.email, req.params.code, req.mysql, (error, data) => {
             return Si_user.response(res, error, data);
