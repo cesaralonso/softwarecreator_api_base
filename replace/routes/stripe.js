@@ -1,9 +1,9 @@
 const router = require('express').Router();
 
-const Liquidacion = require('../models/liquidacion');
+const Liquidacion = require('../models/si_liquidacion');
 const Si_user = require('../models/si_user');
-const Alerta = require('../models/alerta');
-const Pagoliquidacion = require('../models/pagoliquidacion');
+const Alerta = require('../models/si_alerta');
+const Pagoliquidacion = require('../models/si_pagoliquidacion');
 const bodyParser = require('body-parser');
 
 const dotenv = require('dotenv');
