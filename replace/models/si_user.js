@@ -371,7 +371,7 @@ Si_user.login = (email, password, connection, next) => {
                                     else {
 
                                         // TOMAR ID DE SESIÓN...
-                                        querySesion = 'SELECT idsesion FROM si_sesion WHERE si_user_idsi_user = ?';
+                                        querySesion = 'SELECT idsi_sesion FROM si_sesion WHERE si_user_idsi_user = ?';
                                         keys = [user.idsi_user];
 
                                         connection.query(querySesion, keys, (error, resultSesion) => {
@@ -382,7 +382,7 @@ Si_user.login = (email, password, connection, next) => {
 
                                                 // INSERTAR SESIÓN ESTADO
                                                 querySesion = `INSERT INTO si_sesionestado SET si_sesion_idsi_sesion = ?, estado = 'CONECTADO'`;
-                                                connection.query(querySesion, [resultSesion[0].idsesion], (error, si_sesion_estado) => {
+                                                connection.query(querySesion, [resultSesion[0].idsi_sesion], (error, si_sesion_estado) => {
 
                                                     if(error) 
                                                         return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se actualizaba el registro de si_sesion estado'});
@@ -392,11 +392,11 @@ Si_user.login = (email, password, connection, next) => {
                                                             idsi_user: user.idsi_user,
                                                             usuario: user.usuario,
                                                             email: user.email,
-                                                            si_rol_idsi_rol: user.si_rol_idsi_rol,
+                                                            idrol: user.si_rol_idsi_rol,
                                                             nombre: user.nombre,
                                                             idcliente: user.idcliente || 0,
                                                             super: user.super || 0,
-                                                            idsesion: resultSesion[0].idsesion
+                                                            idsesion: resultSesion[0].idsi_sesion
                                                         }
 
                                                         // Generate token
@@ -415,7 +415,7 @@ Si_user.login = (email, password, connection, next) => {
                                                             user: user,
                                                             idcliente: user.idcliente || 0,
                                                             nombre: user.nombre,
-                                                            idsesion: resultSesion[0].idsesion
+                                                            idsesion: resultSesion[0].idsi_sesion
                                                         });
 
                                                     }
