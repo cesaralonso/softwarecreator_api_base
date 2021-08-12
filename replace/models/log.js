@@ -1,4 +1,4 @@
-const si_Log = {};
+const Log = {};
 
 Log.findByIdSi_modulo = (idSi_modulo, created_by, connection, next) => {
     if( !connection )
@@ -158,10 +158,10 @@ Log.update = (Log, created_by, connection, next) => {
     let keys = [];
     if (created_by) {
         query = `UPDATE si_log SET ? WHERE idlog = ? AND created_by = ?`;
-        keys = [Log, si_Log.idlog, created_by];
+        keys = [Log, Log.idlog, created_by];
     } else {
         query = `UPDATE si_log SET ? WHERE idlog = ?`;
-        keys = [Log, si_Log.idlog];
+        keys = [Log, Log.idlog];
     }
 
     connection.query(query, keys, (error, result) => {
@@ -229,4 +229,4 @@ Log.response = (res, error, data) => {
         res.status(200).json(data);
 };  
 
-module.exports = si_Log;
+module.exports = Log;
