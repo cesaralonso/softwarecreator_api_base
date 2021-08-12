@@ -381,11 +381,11 @@ Si_user.login = (email, password, connection, next) => {
                                             else {
 
                                                 // INSERTAR SESIÓN ESTADO
-                                                querySesion = `INSERT INTO si_sesionestado SET sesion_idsesion = ?, estado = 'CONECTADO'`;
-                                                connection.query(querySesion, [resultSesion[0].idsesion], (error, sesion_estado) => {
+                                                querySesion = `INSERT INTO si_sesionestado SET si_sesion_idsesion = ?, estado = 'CONECTADO'`;
+                                                connection.query(querySesion, [resultSesion[0].idsesion], (error, si_sesion_estado) => {
 
                                                     if(error) 
-                                                        return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se actualizaba el registro de sesion estado'});
+                                                        return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se actualizaba el registro de si_sesion estado'});
                                                     else {
 
                                                         const payload = {
@@ -449,15 +449,15 @@ Si_user.all = (created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = `SELECT si_user.*, si_rol.nombre as si_rol_si_rol_idsi_rol, sesion.estado as sesionestado, sesion.modified_at as sesionmodifiedat  FROM si_user 
+        query = `SELECT si_user.*, si_rol.nombre as si_rol_si_rol_idsi_rol, si_sesion.estado as si_sesionestado, si_sesion.modified_at as si_sesionmodifiedat  FROM si_user 
         INNER JOIN si_rol on si_rol.idsi_rol = si_user.si_rol_idsi_rol 
-        LEFT JOIN sesion on sesion.si_user_idsi_user = si_user.idsi_user
+        LEFT JOIN si_sesion on si_sesion.si_user_idsi_user = si_user.idsi_user
         WHERE created_by = ? HAVING si_user.baja IS NULL OR si_user.baja = false`;
         keys = [created_by];
     } else {
-        query = `SELECT si_user.*, si_rol.nombre as si_rol_si_rol_idsi_rol, sesion.estado as sesionestado, sesion.modified_at as sesionmodifiedat FROM si_user 
+        query = `SELECT si_user.*, si_rol.nombre as si_rol_si_rol_idsi_rol, si_sesion.estado as si_sesionestado, si_sesion.modified_at as si_sesionmodifiedat FROM si_user 
         INNER JOIN si_rol on si_rol.idsi_rol = si_user.si_rol_idsi_rol 
-        LEFT JOIN sesion on sesion.si_user_idsi_user = si_user.idsi_user
+        LEFT JOIN si_sesion on si_sesion.si_user_idsi_user = si_user.idsi_user
         HAVING si_user.baja IS NULL OR si_user.baja = false`;
         keys = [];
     }
@@ -479,15 +479,15 @@ Si_user.allRolClientes = (created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = `SELECT si_user.*, si_rol.nombre as si_rol_si_rol_idsi_rol, sesion.estado as sesionestado, sesion.modified_at as sesionmodifiedat FROM si_user 
+        query = `SELECT si_user.*, si_rol.nombre as si_rol_si_rol_idsi_rol, si_sesion.estado as si_sesionestado, si_sesion.modified_at as si_sesionmodifiedat FROM si_user 
         INNER JOIN si_rol on si_rol.idsi_rol = si_user.si_rol_idsi_rol 
-        LEFT JOIN sesion on sesion.si_user_idsi_user = si_user.idsi_user
+        LEFT JOIN si_sesion on si_sesion.si_user_idsi_user = si_user.idsi_user
         WHERE created_by = ? AND si_rol.nombre = 'CLIENTE' HAVING si_user.baja IS NULL OR si_user.baja = false`;
         keys = [created_by];
     } else {
-        query = `SELECT si_user.*, si_rol.nombre as si_rol_si_rol_idsi_rol, sesion.estado as sesionestado, sesion.modified_at as sesionmodifiedat FROM si_user 
+        query = `SELECT si_user.*, si_rol.nombre as si_rol_si_rol_idsi_rol, si_sesion.estado as si_sesionestado, si_sesion.modified_at as si_sesionmodifiedat FROM si_user 
         INNER JOIN si_rol on si_rol.idsi_rol = si_user.si_rol_idsi_rol 
-        LEFT JOIN sesion on sesion.si_user_idsi_user = si_user.idsi_user
+        LEFT JOIN si_sesion on si_sesion.si_user_idsi_user = si_user.idsi_user
         WHERE si_rol.nombre = 'CLIENTE' HAVING si_user.baja IS NULL OR si_user.baja = false`;
         keys = [];
     }
@@ -509,17 +509,17 @@ Si_user.allClientes = (created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = `SELECT si_user.*, si_rol.nombre as si_rol_si_rol_idsi_rol, sesion.estado as sesionestado, sesion.modified_at as sesionmodifiedat FROM si_user 
+        query = `SELECT si_user.*, si_rol.nombre as si_rol_si_rol_idsi_rol, si_sesion.estado as si_sesionestado, si_sesion.modified_at as si_sesionmodifiedat FROM si_user 
         INNER JOIN si_rol on si_rol.idsi_rol = si_user.si_rol_idsi_rol 
         INNER JOIN cliente as c ON c.si_user_idsi_user = si_user.idsi_user
-        LEFT JOIN sesion on sesion.si_user_idsi_user = si_user.idsi_user
+        LEFT JOIN si_sesion on si_sesion.si_user_idsi_user = si_user.idsi_user
         WHERE created_by = ? HAVING si_user.baja IS NULL OR si_user.baja = false`;
         keys = [created_by];
     } else {
-        query = `SELECT si_user.*, si_rol.nombre as si_rol_si_rol_idsi_rol, sesion.estado as sesionestado, sesion.modified_at as sesionmodifiedat FROM si_user 
+        query = `SELECT si_user.*, si_rol.nombre as si_rol_si_rol_idsi_rol, si_sesion.estado as si_sesionestado, si_sesion.modified_at as si_sesionmodifiedat FROM si_user 
         INNER JOIN si_rol on si_rol.idsi_rol = si_user.si_rol_idsi_rol 
         INNER JOIN cliente as c ON c.si_user_idsi_user = si_user.idsi_user
-        LEFT JOIN sesion on sesion.si_user_idsi_user = si_user.idsi_user
+        LEFT JOIN si_sesion on si_sesion.si_user_idsi_user = si_user.idsi_user
         HAVING si_user.baja IS NULL OR si_user.baja = false`;
         keys = [];
     }
