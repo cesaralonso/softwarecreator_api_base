@@ -381,7 +381,7 @@ Si_user.login = (email, password, connection, next) => {
                                             else {
 
                                                 // INSERTAR SESIÓN ESTADO
-                                                querySesion = `INSERT INTO si_sesionestado SET si_sesion_idsesion = ?, estado = 'CONECTADO'`;
+                                                querySesion = `INSERT INTO si_sesionestado SET si_sesion_idsi_sesion = ?, estado = 'CONECTADO'`;
                                                 connection.query(querySesion, [resultSesion[0].idsesion], (error, si_sesion_estado) => {
 
                                                     if(error) 
