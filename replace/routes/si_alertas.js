@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const Alerta = require('../models/alerta');
+const Alerta = require('../models/si_alerta');
 const passport = require('passport');
 const permissions = require('../config/permissions');
 
@@ -10,7 +10,7 @@ router
             if( !auth_data )
                 return next('auth_data refused');
  
-            permissions.module_permission(auth_data.modules, 'alerta', auth_data.user.super, 'readable', (error, permission) => {
+            permissions.module_permission(auth_data.modules, 'si_alerta', auth_data.user.super, 'readable', (error, permission) => {
                 if (permission.success) {
                     const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
 
@@ -31,7 +31,7 @@ router
             if( !auth_data )
                 return next('auth_data refused');
  
-            permissions.module_permission(auth_data.modules, 'alerta', auth_data.user.super, 'readable', (error, permission) => {
+            permissions.module_permission(auth_data.modules, 'si_alerta', auth_data.user.super, 'readable', (error, permission) => {
                 if (permission.success) {
                     const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
 
@@ -52,7 +52,7 @@ router
             if( !auth_data )
                 return next('auth_data refused');
  
-            permissions.module_permission(auth_data.modules, 'alerta', auth_data.user.super, 'readable', (error, permission) => {
+            permissions.module_permission(auth_data.modules, 'si_alerta', auth_data.user.super, 'readable', (error, permission) => {
                 if (permission.success) {
                     const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
 
@@ -73,7 +73,7 @@ router
             if( !auth_data )
                 return next('auth_data refused');
  
-            permissions.module_permission(auth_data.modules, 'alerta', auth_data.user.super, 'readable', (error, permission) => {
+            permissions.module_permission(auth_data.modules, 'si_alerta', auth_data.user.super, 'readable', (error, permission) => {
                 if (permission.success) {
                     Alerta.count(req.mysql, (error, data) => {
                         return Alerta.response(res, error, data);
@@ -89,7 +89,7 @@ router
             if( !auth_data )
                 return next('auth_data refused');
  
-            permissions.module_permission(auth_data.modules, 'alerta', auth_data.user.super, 'readable', (error, permission) => {
+            permissions.module_permission(auth_data.modules, 'si_alerta', auth_data.user.super, 'readable', (error, permission) => {
                 if (permission.success) {
                     Alerta.exist(req.params.id, req.mysql, (error, data) => {
                         return Alerta.response(res, error, data);
@@ -105,7 +105,7 @@ router
             if( !auth_data )
                 return next('auth_data refused');
  
-            permissions.module_permission(auth_data.modules, 'alerta', auth_data.user.super, 'readable', (error, permission) => {
+            permissions.module_permission(auth_data.modules, 'si_alerta', auth_data.user.super, 'readable', (error, permission) => {
                 if (permission.success) {
                     const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
                     Alerta.findById(req.params.id, created_by, req.mysql, (error, data) => {
@@ -122,7 +122,7 @@ router
             if( !auth_data )
                 return next('auth_data refused');
  
-            permissions.module_permission(auth_data.modules, 'alerta', auth_data.user.super, 'deleteable', (error, permission) => {
+            permissions.module_permission(auth_data.modules, 'si_alerta', auth_data.user.super, 'deleteable', (error, permission) => {
                 if (permission.success) {
                     const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
                     Alerta.logicRemove(req.params.id, created_by, req.mysql, (error, data) => {
@@ -139,7 +139,7 @@ router
             if( !auth_data )
                 return next('auth_data refused');
  
-            permissions.module_permission(auth_data.modules, 'alerta', auth_data.user.super, 'updateable', (error, permission) => {
+            permissions.module_permission(auth_data.modules, 'si_alerta', auth_data.user.super, 'updateable', (error, permission) => {
                 if (permission.success) {
                     const _alerta = req.body;
                     const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
@@ -157,7 +157,7 @@ router
             if( !auth_data )
                 return next('auth_data refused');
  
-            permissions.module_permission(auth_data.modules, 'alerta', auth_data.user.super, 'updateable', (error, permission) => {
+            permissions.module_permission(auth_data.modules, 'si_alerta', auth_data.user.super, 'updateable', (error, permission) => {
                 if (permission.success) {
                     const _alerta = req.body;
                     const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
@@ -175,7 +175,7 @@ router
             if( !auth_data )
                 return next('auth_data refused');
  
-            permissions.module_permission(auth_data.modules, 'alerta', auth_data.user.super, 'writeable', (error, permission) => {
+            permissions.module_permission(auth_data.modules, 'si_alerta', auth_data.user.super, 'writeable', (error, permission) => {
                 if (permission.success) {
                     const _alerta = req.body;
                     _alerta.created_by = auth_data.user.idsi_user;

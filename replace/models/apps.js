@@ -35,7 +35,9 @@ Api.allSesion = (created_by, connection, next) => {
     let query = '';
     let keys = [];
 
-    query = `SELECT si_sesion.latitude, si_sesion.longitude, si_sesion.accuracy, si_sesion.modified_at, u.usuario, u.email FROM si_sesion INNER JOIN si_user AS u ON u.idsi_user = si_sesion.si_user_idsi_user WHERE si_sesion.latitude != '' AND si_sesion.longitude != ''`;
+    query = `SELECT si_sesion.latitude, si_sesion.longitude, si_sesion.accuracy, si_sesion.modified_at, u.usuario, u.email FROM si_sesion 
+            INNER JOIN si_user AS u ON u.idsi_user = si_sesion.si_user_idsi_user 
+            WHERE si_sesion.latitude != '' AND si_sesion.longitude != ''`;
     keys = [];
 
     connection.query(query, keys, (error, resultSesion) => {
@@ -48,15 +50,15 @@ Api.allSesion = (created_by, connection, next) => {
     });
 };
 
-Api.sesionPosicion = (coords, idsesion, created_by, connection, next) => {
+Api.sesionPosicion = (coords, idsi_sesion, created_by, connection, next) => {
     if( !connection )
         return next('Connection refused');
 
     let query = '';
     let keys = [];
 
-    query = `UPDATE si_sesion SET latitude = ?, longitude = ?, accuracy = ? WHERE idsesion = ?`;
-    keys = [coords.latitude, coords.longitude, coords.accuracy, idsesion];
+    query = `UPDATE si_sesion SET latitude = ?, longitude = ?, accuracy = ? WHERE idsi_sesion = ?`;
+    keys = [coords.latitude, coords.longitude, coords.accuracy, idsi_sesion];
 
     connection.query(query, keys, (error, resultSesion) => {
         if(error) 
@@ -68,7 +70,7 @@ Api.sesionPosicion = (coords, idsesion, created_by, connection, next) => {
     });
 };
 
-Api.cerrarSesion = (idsesion, created_by, connection, next) => {
+Api.cerrarSesion = (idsi_sesion, created_by, connection, next) => {
     if( !connection )
         return next('Connection refused');
 
@@ -84,8 +86,8 @@ Api.cerrarSesion = (idsesion, created_by, connection, next) => {
         else {
             // Si actualizó
             if (resultSesion.affectedRows) {
-                const querySession = `INSERT INTO si_sesionestado SET si_sesion_idsesion = ?, estado = 'DESCONECTADO'`;
-                const query = connection.query(querySession, [idsesion], (error, si_sesion_estado) => {
+                const querySession = `INSERT INTO si_sesionestado SET si_sesion_idsi_sesion = ?, estado = 'DESCONECTADO'`;
+                const query = connection.query(querySession, [idsi_sesion], (error, si_sesionestado) => {
 
                     if(error) 
                         return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se actualizaba el registro de si_sesion estado'});
@@ -98,15 +100,15 @@ Api.cerrarSesion = (idsesion, created_by, connection, next) => {
     });
 };
 
-Api.cerrarSesionByIdSesion = (sesion, idsesion, created_by, connection, next) => {
+Api.cerrarSesionByIdSesion = (sesion, idsi_sesion, created_by, connection, next) => {
     if( !connection )
         return next('Connection refused');
 
     let query = '';
     let keys = [];
 
-    query = `UPDATE si_sesion SET estado = 'DESCONECTADO'  WHERE idsesion = ?`;
-    keys = [idsesion];
+    query = `UPDATE si_sesion SET estado = 'DESCONECTADO'  WHERE idsi_sesion = ?`;
+    keys = [idsi_sesion];
 
     connection.query(query, keys, (error, resultSesion) => {
         if(error) 
@@ -117,9 +119,9 @@ Api.cerrarSesionByIdSesion = (sesion, idsesion, created_by, connection, next) =>
             if (resultSesion.affectedRows) {
 
                 let querySession;
-                querySession = `INSERT INTO si_sesion_estado SET idsesion = ?, estado = 'DESCONECTADO'`;
+                querySession = `INSERT INTO si_sesionestado SET si_sesion_idsi_sesion = ?, estado = 'DESCONECTADO'`;
      
-                const query = connection.query(querySession, [idsesion], (error, si_sesion_estado) => {
+                const query = connection.query(querySession, [idsi_sesion], (error, si_sesionestado) => {
                     if(error) 
                         return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se actualizaba el registro de si_sesion chofer estado'});
                     else {
