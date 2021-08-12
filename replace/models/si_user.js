@@ -361,7 +361,7 @@ Si_user.login = (email, password, connection, next) => {
                             else {
 
                                 // INSERTAR AQUÍ MISMO LA SESIÓN
-                                querySesion = 'INSERT INTO sesion SET si_user_idsi_user = ?, estado=\'CONECTADO\' ON DUPLICATE KEY UPDATE si_user_idsi_user = ?, estado=\'CONECTADO\'';
+                                querySesion = 'INSERT INTO si_sesion SET si_user_idsi_user = ?, estado=\'CONECTADO\' ON DUPLICATE KEY UPDATE si_user_idsi_user = ?, estado=\'CONECTADO\'';
                                 keys = [user.idsi_user, user.idsi_user];
 
                                 connection.query(querySesion, keys, (error, result) => {
@@ -371,7 +371,7 @@ Si_user.login = (email, password, connection, next) => {
                                     else {
 
                                         // TOMAR ID DE SESIÓN...
-                                        querySesion = 'SELECT idsesion FROM sesion WHERE si_user_idsi_user = ?';
+                                        querySesion = 'SELECT idsesion FROM si_sesion WHERE si_user_idsi_user = ?';
                                         keys = [user.idsi_user];
 
                                         connection.query(querySesion, keys, (error, resultSesion) => {
@@ -381,7 +381,7 @@ Si_user.login = (email, password, connection, next) => {
                                             else {
 
                                                 // INSERTAR SESIÓN ESTADO
-                                                querySesion = `INSERT INTO sesionestado SET sesion_idsesion = ?, estado = 'CONECTADO'`;
+                                                querySesion = `INSERT INTO si_sesionestado SET sesion_idsesion = ?, estado = 'CONECTADO'`;
                                                 connection.query(querySesion, [resultSesion[0].idsesion], (error, sesion_estado) => {
 
                                                     if(error) 

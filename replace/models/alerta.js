@@ -32,10 +32,10 @@ Alerta.findFromTo = (fechaDesde, fechaHasta, created_by, ami, connection, next) 
 
             // PRIMERO LAS ENVIADAS
             if (created_by) {
-                query = 'SELECT urem.usuario as remitente, alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM alerta INNER JOIN si_user as urem ON urem.idsi_user = alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = alerta.si_user_idsi_user WHERE alerta.created_at BETWEEN ? AND ? AND alerta.created_by = ? HAVING alerta.baja IS NULL OR alerta.baja = false ORDER BY alerta.created_at DESC';
+                query = 'SELECT urem.usuario as remitente, si_alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, si_alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM si_alerta INNER JOIN si_user as urem ON urem.idsi_user = si_alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = si_alerta.si_user_idsi_user WHERE si_alerta.created_at BETWEEN ? AND ? AND si_alerta.created_by = ? HAVING si_alerta.baja IS NULL OR si_alerta.baja = false ORDER BY si_alerta.created_at DESC';
                 keys = [fechaDesde, fechaHasta, created_by];
             } else {
-                query = 'SELECT urem.usuario as remitente, alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM alerta INNER JOIN si_user as urem ON urem.idsi_user = alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = alerta.si_user_idsi_user WHERE alerta.created_at BETWEEN ? AND ? AND alerta.created_by = ? HAVING alerta.baja IS NULL OR alerta.baja = false ORDER BY alerta.created_at DESC';
+                query = 'SELECT urem.usuario as remitente, si_alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, si_alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM si_alerta INNER JOIN si_user as urem ON urem.idsi_user = si_alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = si_alerta.si_user_idsi_user WHERE si_alerta.created_at BETWEEN ? AND ? AND si_alerta.created_by = ? HAVING si_alerta.baja IS NULL OR si_alerta.baja = false ORDER BY si_alerta.created_at DESC';
                 keys = [fechaDesde, fechaHasta, +ami];
             }
 
@@ -47,10 +47,10 @@ Alerta.findFromTo = (fechaDesde, fechaHasta, created_by, ami, connection, next) 
 
             // DESPUÉS LAS RECIBIDAS
             if (created_by) {
-                query = 'SELECT urem.usuario as remitente, alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM alerta INNER JOIN si_user as urem ON urem.idsi_user = alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = alerta.si_user_idsi_user WHERE alerta.created_at BETWEEN ? AND ? AND alerta.created_by = ? HAVING alerta.baja IS NULL OR alerta.baja = false ORDER BY alerta.created_at DESC';
+                query = 'SELECT urem.usuario as remitente, si_alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, si_alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM si_alerta INNER JOIN si_user as urem ON urem.idsi_user = si_alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = si_alerta.si_user_idsi_user WHERE si_alerta.created_at BETWEEN ? AND ? AND si_alerta.created_by = ? HAVING si_alerta.baja IS NULL OR si_alerta.baja = false ORDER BY si_alerta.created_at DESC';
                 keys = [fechaDesde, fechaHasta, created_by];
             } else {
-                query = 'SELECT urem.usuario as remitente, alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM alerta INNER JOIN si_user as urem ON urem.idsi_user = alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = alerta.si_user_idsi_user WHERE alerta.created_at BETWEEN ? AND ? AND  alerta.si_user_idsi_user = ? HAVING alerta.baja IS NULL OR alerta.baja = false ORDER BY alerta.created_at DESC';
+                query = 'SELECT urem.usuario as remitente, si_alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, si_alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM si_alerta INNER JOIN si_user as urem ON urem.idsi_user = si_alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = si_alerta.si_user_idsi_user WHERE si_alerta.created_at BETWEEN ? AND ? AND  si_alerta.si_user_idsi_user = ? HAVING si_alerta.baja IS NULL OR si_alerta.baja = false ORDER BY si_alerta.created_at DESC';
                 keys = [fechaDesde, fechaHasta, +ami];
             }
 
@@ -67,11 +67,11 @@ Alerta.findFromTo = (fechaDesde, fechaHasta, created_by, ami, connection, next) 
                 
                 // ACTUALIZA
                 if (created_by) {
-                    query = 'UPDATE alerta SET vista = true WHERE idalerta = ?';
+                    query = 'UPDATE si_alerta SET vista = true WHERE idalerta = ?';
         
                     keys = [recibida.idalerta];
                 } else {
-                    query = 'UPDATE alerta SET vista = true WHERE idalerta = ?';
+                    query = 'UPDATE si_alerta SET vista = true WHERE idalerta = ?';
                     keys = [recibida.idalerta];
                 }
 
@@ -101,10 +101,10 @@ Alerta.all = (created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = `SELECT urem.usuario as remitente, alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM alerta INNER JOIN si_user as urem ON urem.idsi_user = alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = alerta.si_user_idsi_user WHERE alerta.created_by = ?  HAVING alerta.baja IS NULL OR alerta.baja = false`;
+        query = `SELECT urem.usuario as remitente, si_alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, si_alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM si_alerta INNER JOIN si_user as urem ON urem.idsi_user = si_alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = si_alerta.si_user_idsi_user WHERE si_alerta.created_by = ?  HAVING si_alerta.baja IS NULL OR si_alerta.baja = false`;
         keys = [created_by];
     } else {
-        query = `SELECT urem.usuario as remitente, alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM alerta INNER JOIN si_user as urem ON urem.idsi_user = alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = alerta.si_user_idsi_user HAVING alerta.baja IS NULL OR alerta.baja = false`;
+        query = `SELECT urem.usuario as remitente, si_alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, si_alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM si_alerta INNER JOIN si_user as urem ON urem.idsi_user = si_alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = si_alerta.si_user_idsi_user HAVING si_alerta.baja IS NULL OR si_alerta.baja = false`;
         keys = [];
     }
 
@@ -133,10 +133,10 @@ Alerta.allSeparadas = (created_by, ami, connection, next) => {
 
             // PRIMERO LAS ENVIADAS
             if (created_by) {
-                query = 'SELECT urem.usuario as remitente, alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM alerta INNER JOIN si_user as urem ON urem.idsi_user = alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = alerta.si_user_idsi_user WHERE alerta.created_by = ? AND alerta.created_at >= ? HAVING alerta.baja IS NULL OR alerta.baja = false ORDER BY alerta.created_at DESC';
+                query = 'SELECT urem.usuario as remitente, si_alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, si_alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM si_alerta INNER JOIN si_user as urem ON urem.idsi_user = si_alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = si_alerta.si_user_idsi_user WHERE si_alerta.created_by = ? AND si_alerta.created_at >= ? HAVING si_alerta.baja IS NULL OR si_alerta.baja = false ORDER BY si_alerta.created_at DESC';
                 keys = [created_by, thisMonth];
             } else {
-                query = 'SELECT urem.usuario as remitente, alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM alerta INNER JOIN si_user as urem ON urem.idsi_user = alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = alerta.si_user_idsi_user WHERE alerta.created_by = ? AND alerta.created_at >= ? HAVING alerta.baja IS NULL OR alerta.baja = false ORDER BY alerta.created_at DESC';
+                query = 'SELECT urem.usuario as remitente, si_alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, si_alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM si_alerta INNER JOIN si_user as urem ON urem.idsi_user = si_alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = si_alerta.si_user_idsi_user WHERE si_alerta.created_by = ? AND si_alerta.created_at >= ? HAVING si_alerta.baja IS NULL OR si_alerta.baja = false ORDER BY si_alerta.created_at DESC';
                 keys = [+ami, thisMonth];
             }
 
@@ -148,10 +148,10 @@ Alerta.allSeparadas = (created_by, ami, connection, next) => {
 
             // DESPUÉS LAS RECIBIDAS
             if (created_by) {
-                query = 'SELECT urem.usuario as remitente, alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM alerta INNER JOIN si_user as urem ON urem.idsi_user = alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = alerta.si_user_idsi_user WHERE alerta.created_at >= ? AND alerta.created_by = ? HAVING alerta.baja IS NULL OR alerta.baja = false ORDER BY alerta.created_at DESC';
+                query = 'SELECT urem.usuario as remitente, si_alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, si_alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM si_alerta INNER JOIN si_user as urem ON urem.idsi_user = si_alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = si_alerta.si_user_idsi_user WHERE si_alerta.created_at >= ? AND si_alerta.created_by = ? HAVING si_alerta.baja IS NULL OR si_alerta.baja = false ORDER BY si_alerta.created_at DESC';
                 keys = [created_by, thisMonth];
             } else {
-                query = 'SELECT urem.usuario as remitente, alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM alerta INNER JOIN si_user as urem ON urem.idsi_user = alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = alerta.si_user_idsi_user WHERE alerta.si_user_idsi_user = ? AND alerta.created_at >= ? HAVING alerta.baja IS NULL OR alerta.baja = false ORDER BY alerta.created_at DESC';
+                query = 'SELECT urem.usuario as remitente, si_alerta.*, udes.usuario as si_user_si_user_idsi_user , udes.email as emailDestinatario, urem.email as emailRemitente, si_alerta.tipoAlerta as tipoalerta_tipoalerta_idtipoalerta FROM si_alerta INNER JOIN si_user as urem ON urem.idsi_user = si_alerta.created_by INNER JOIN si_user as udes ON udes.idsi_user = si_alerta.si_user_idsi_user WHERE si_alerta.si_user_idsi_user = ? AND si_alerta.created_at >= ? HAVING si_alerta.baja IS NULL OR si_alerta.baja = false ORDER BY si_alerta.created_at DESC';
                 keys = [+ami, thisMonth];
             }
 
@@ -168,11 +168,11 @@ Alerta.allSeparadas = (created_by, ami, connection, next) => {
                 
                 // ACTUALIZA
                 if (created_by) {
-                    query = 'UPDATE alerta SET vista = true WHERE idalerta = ?';
+                    query = 'UPDATE si_alerta SET vista = true WHERE idalerta = ?';
         
                     keys = [recibida.idalerta];
                 } else {
-                    query = 'UPDATE alerta SET vista = true WHERE idalerta = ?';
+                    query = 'UPDATE si_alerta SET vista = true WHERE idalerta = ?';
                     keys = [recibida.idalerta];
                 }
 
@@ -202,10 +202,10 @@ Alerta.findById = (idAlerta, created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT * FROM alerta WHERE idalerta = ? AND created_by = ? HAVING baja IS NULL OR baja = false';
+        query = 'SELECT * FROM si_alerta WHERE idalerta = ? AND created_by = ? HAVING baja IS NULL OR baja = false';
         keys = [idAlerta, created_by];
     } else {
-        query = 'SELECT * FROM alerta WHERE idalerta = ? HAVING baja IS NULL OR baja = false';
+        query = 'SELECT * FROM si_alerta WHERE idalerta = ? HAVING baja IS NULL OR baja = false';
         keys = [idAlerta];
     }
 
@@ -225,7 +225,7 @@ Alerta.count = (connection, next) => {
 
     let query = '';
     let keys = [];
-    query = 'SELECT COUNT(idalerta) AS count FROM alerta';
+    query = 'SELECT COUNT(idalerta) AS count FROM si_alerta';
     keys = [];
 
     connection.query(query, keys, (error, result) => {
@@ -242,7 +242,7 @@ Alerta.exist = (idAlerta, connection, next) => {
 
     let query = '';
     let keys = [];
-    query = 'SELECT EXISTS(SELECT 1 FROM alerta WHERE idalerta = ?) AS exist';
+    query = 'SELECT EXISTS(SELECT 1 FROM si_alerta WHERE idalerta = ?) AS exist';
     keys = [idAlerta];
 
     connection.query(query, keys, (error, result) => {
@@ -275,7 +275,7 @@ Alerta.insert = (Alerta, connection, next) => {
         _enlace = `<hr><p><a href="${process.env.APP_PRODURL}/#/${Alerta.enlace}">Ir hacia enlace</a>.</p>`;
     }
 
-    query = 'INSERT INTO alerta SET ?';
+    query = 'INSERT INTO si_alerta SET ?';
     keys = [_alerta];
 
     connection.query(query, keys, (error, result) => {
@@ -321,7 +321,7 @@ Alerta.insert = (Alerta, connection, next) => {
             // AHORA LAS WEB PUSH
             Api.sendToIdusers( [Alerta.si_user_idsi_user], Alerta.mensaje, connection, (error, data) => {
                 if (error) 
-                    return next({ success: false, error: error, message: 'Un error mientras se creaba una push notification de la alerta creada.' });
+                    return next({ success: false, error: error, message: 'Un error mientras se creaba una push notification de la si_alerta creada.' });
                 else {
                     return next(null, { success: true, result: result, message: 'Alerta y push notification creadas.' });
                 }
@@ -374,12 +374,12 @@ Alerta.notificarPorUsuarios = (Proyecto, mensaje, connection, next) => {
                 created_by: Proyecto.created_by
             };
                         
-            query = 'INSERT INTO alerta SET ?';
+            query = 'INSERT INTO si_alerta SET ?';
             keys = [_alerta];
 
             connection.query(query, keys, (error, _alertaCreada) => {
                 if (error) 
-                    return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se creaba la alerta' });
+                    return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se creaba la si_alerta' });
                 else {
              
                     // SI EXISTE UN ENLACE
@@ -501,12 +501,12 @@ Alerta.notificarPorArea = (Proyecto, mensaje, connection, next) => {
                                 created_by: Proyecto.created_by
                             };
                                         
-                            query = 'INSERT INTO alerta SET ?';
+                            query = 'INSERT INTO si_alerta SET ?';
                             keys = [_alerta];
 
                             connection.query(query, keys, (error, _alertaCreada) => {
                                 if (error) 
-                                    return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se creaba la alerta' });
+                                    return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se creaba la si_alerta' });
                                 else {
 
                                     // SI EXISTE UN ENLACE
@@ -587,10 +587,10 @@ Alerta.marcarComoLeidas = async (Alerta, created_by, connection, next) => {
 
     if (Alerta.length) {
         if (created_by) {
-            query = `UPDATE alerta SET leida = true WHERE idalerta IN (${Alerta.toString()}) AND created_by = ?`;
+            query = `UPDATE si_alerta SET leida = true WHERE idalerta IN (${Alerta.toString()}) AND created_by = ?`;
             keys = [created_by];
         } else {
-            query = `UPDATE alerta SET leida = true WHERE idalerta IN (${Alerta.toString()})`;
+            query = `UPDATE si_alerta SET leida = true WHERE idalerta IN (${Alerta.toString()})`;
             keys = [];
         }
         await connection.query(query, keys, (error, result) => {
@@ -612,10 +612,10 @@ Alerta.update = (Alerta, created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'UPDATE alerta SET ? WHERE idalerta = ? AND created_by = ?';
+        query = 'UPDATE si_alerta SET ? WHERE idalerta = ? AND created_by = ?';
         keys = [Alerta, Alerta.idalerta, created_by];
     } else {
-        query = 'UPDATE alerta SET ? WHERE idalerta = ?';
+        query = 'UPDATE si_alerta SET ? WHERE idalerta = ?';
         keys = [Alerta, Alerta.idalerta];
     }
 
@@ -636,10 +636,10 @@ Alerta.remove = (idalerta, created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'DELETE FROM alerta WHERE idalerta = ? AND created_by = ?';
+        query = 'DELETE FROM si_alerta WHERE idalerta = ? AND created_by = ?';
         keys = [idalerta, created_by];
     } else {
-        query = 'DELETE FROM alerta WHERE idalerta = ?';
+        query = 'DELETE FROM si_alerta WHERE idalerta = ?';
         keys = [idalerta];
     }
 
@@ -660,10 +660,10 @@ Alerta.logicRemove = (idalerta, created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'UPDATE alerta SET baja = 1 WHERE idalerta = ? AND created_by = ?';
+        query = 'UPDATE si_alerta SET baja = 1 WHERE idalerta = ? AND created_by = ?';
         keys = [idalerta, created_by];
     } else {
-        query = 'UPDATE alerta SET baja = 1 WHERE idalerta = ?';
+        query = 'UPDATE si_alerta SET baja = 1 WHERE idalerta = ?';
         keys = [idalerta];
     }
 

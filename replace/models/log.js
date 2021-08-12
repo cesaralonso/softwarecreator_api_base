@@ -1,4 +1,4 @@
-const Log = {};
+const si_Log = {};
 
 Log.findByIdSi_modulo = (idSi_modulo, created_by, connection, next) => {
     if( !connection )
@@ -7,10 +7,10 @@ Log.findByIdSi_modulo = (idSi_modulo, created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = `SELECT log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM log INNER JOIN si_user as _si_user ON _si_user.idsi_user = log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = log.si_modulo_idsi_modulo   WHERE log.si_modulo_idsi_modulo = ? AND log.created_by = ? HAVING log.baja IS NULL OR log.baja = false`;
+        query = `SELECT si_log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM si_log INNER JOIN si_user as _si_user ON _si_user.idsi_user = si_log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = si_log.si_modulo_idsi_modulo   WHERE si_log.si_modulo_idsi_modulo = ? AND si_log.created_by = ? HAVING si_log.baja IS NULL OR si_log.baja = false`;
         keys = [idSi_modulo, created_by];
     } else {
-        query = `SELECT log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM log INNER JOIN si_user as _si_user ON _si_user.idsi_user = log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = log.si_modulo_idsi_modulo   WHERE log.si_modulo_idsi_modulo = ? HAVING log.baja IS NULL OR log.baja = false`;
+        query = `SELECT si_log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM si_log INNER JOIN si_user as _si_user ON _si_user.idsi_user = si_log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = si_log.si_modulo_idsi_modulo   WHERE si_log.si_modulo_idsi_modulo = ? HAVING si_log.baja IS NULL OR si_log.baja = false`;
         keys = [idSi_modulo];
     }
 
@@ -31,10 +31,10 @@ Log.findFromTo = (fechaDesde, fechaHasta, created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = `SELECT log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM log INNER JOIN si_user as _si_user ON _si_user.idsi_user = log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = log.si_modulo_idsi_modulo   WHERE log.created_at BETWEEN ? AND ?  log.created_by = ? HAVING log.baja IS NULL OR log.baja = false`;
+        query = `SELECT si_log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM si_log INNER JOIN si_user as _si_user ON _si_user.idsi_user = si_log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = si_log.si_modulo_idsi_modulo   WHERE si_log.created_at BETWEEN ? AND ?  si_log.created_by = ? HAVING si_log.baja IS NULL OR si_log.baja = false`;
         keys = [fechaDesde, fechaHasta, created_by];
     } else {
-        query = `SELECT log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM log INNER JOIN si_user as _si_user ON _si_user.idsi_user = log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = log.si_modulo_idsi_modulo   WHERE log.created_at BETWEEN ? AND ? HAVING log.baja IS NULL OR log.baja = false`;
+        query = `SELECT si_log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM si_log INNER JOIN si_user as _si_user ON _si_user.idsi_user = si_log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = si_log.si_modulo_idsi_modulo   WHERE si_log.created_at BETWEEN ? AND ? HAVING si_log.baja IS NULL OR si_log.baja = false`;
         keys = [fechaDesde, fechaHasta];
     }
     connection.query(query, keys, (error, result) => {
@@ -54,13 +54,13 @@ Log.all = (created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = `SELECT log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM log INNER JOIN si_user as _si_user ON _si_user.idsi_user = log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = log.si_modulo_idsi_modulo   
-        WHERE log.created_at >= (DATE_FORMAT(log.created_at, "%Y-%m-01")) AND log.created_by = ? HAVING log.baja IS NULL OR log.baja = false
+        query = `SELECT si_log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM si_log INNER JOIN si_user as _si_user ON _si_user.idsi_user = si_log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = si_log.si_modulo_idsi_modulo   
+        WHERE si_log.created_at >= (DATE_FORMAT(log.created_at, "%Y-%m-01")) AND si_log.created_by = ? HAVING si_log.baja IS NULL OR si_log.baja = false
         ORDER BY created_at DESC`;
         keys = [created_by];
     } else {
-        query = `SELECT log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM log INNER JOIN si_user as _si_user ON _si_user.idsi_user = log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = log.si_modulo_idsi_modulo   
-        WHERE log.created_at >= (DATE_FORMAT(log.created_at, "%Y-%m-01")) HAVING log.baja IS NULL OR log.baja = false
+        query = `SELECT si_log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM si_log INNER JOIN si_user as _si_user ON _si_user.idsi_user = si_log.created_by INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = si_log.si_modulo_idsi_modulo   
+        WHERE si_log.created_at >= (DATE_FORMAT(log.created_at, "%Y-%m-01")) HAVING si_log.baja IS NULL OR si_log.baja = false
         ORDER BY created_at DESC`;
         keys = [];
     }
@@ -82,10 +82,10 @@ Log.findById = (idLog, created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = `SELECT * FROM log WHERE idlog = ? AND created_by = ? HAVING baja IS NULL OR baja = false`;
+        query = `SELECT * FROM si_log WHERE idlog = ? AND created_by = ? HAVING baja IS NULL OR baja = false`;
         keys = [idLog, created_by];
     } else {
-        query = `SELECT * FROM log WHERE idlog = ? HAVING baja IS NULL OR baja = false`;
+        query = `SELECT * FROM si_log WHERE idlog = ? HAVING baja IS NULL OR baja = false`;
         keys = [idLog];
     }
 
@@ -105,7 +105,7 @@ Log.count = (connection, next) => {
 
     let query = '';
     let keys = [];
-    query = `SELECT COUNT(idlog) AS count FROM log`;
+    query = `SELECT COUNT(idlog) AS count FROM si_log`;
     keys = [];
 
     connection.query(query, keys, (error, result) => {
@@ -122,7 +122,7 @@ Log.exist = (idLog, connection, next) => {
 
     let query = '';
     let keys = [];
-    query = `SELECT EXISTS(SELECT 1 FROM log WHERE idlog = ?) AS exist`;
+    query = `SELECT EXISTS(SELECT 1 FROM si_log WHERE idlog = ?) AS exist`;
     keys = [idLog];
 
     connection.query(query, keys, (error, result) => {
@@ -139,7 +139,7 @@ Log.insert = (Log, connection, next) => {
 
     let query = '';
     let keys = [];
-    query = `INSERT INTO log SET ?`;
+    query = `INSERT INTO si_log SET ?`;
     keys = [Log];
 
     connection.query(query, keys, (error, result) => {
@@ -157,11 +157,11 @@ Log.update = (Log, created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = `UPDATE log SET ? WHERE idlog = ? AND created_by = ?`;
-        keys = [Log, Log.idlog, created_by];
+        query = `UPDATE si_log SET ? WHERE idlog = ? AND created_by = ?`;
+        keys = [Log, si_Log.idlog, created_by];
     } else {
-        query = `UPDATE log SET ? WHERE idlog = ?`;
-        keys = [Log, Log.idlog];
+        query = `UPDATE si_log SET ? WHERE idlog = ?`;
+        keys = [Log, si_Log.idlog];
     }
 
     connection.query(query, keys, (error, result) => {
@@ -181,10 +181,10 @@ Log.remove = (idlog, created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = `DELETE FROM log WHERE idlog = ? AND created_by = ?`;
+        query = `DELETE FROM si_log WHERE idlog = ? AND created_by = ?`;
         keys = [idlog, created_by];
     } else {
-        query = `DELETE FROM log WHERE idlog = ?`;
+        query = `DELETE FROM si_log WHERE idlog = ?`;
         keys = [idlog];
     }
 
@@ -205,10 +205,10 @@ Log.logicRemove = (idlog, created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = `UPDATE log SET baja = 1 WHERE idlog = ? AND created_by = ?`;
+        query = `UPDATE si_log SET baja = 1 WHERE idlog = ? AND created_by = ?`;
         keys = [idlog, created_by];
     } else {
-        query = `UPDATE log SET baja = 1 WHERE idlog = ?`;
+        query = `UPDATE si_log SET baja = 1 WHERE idlog = ?`;
         keys = [idlog];
     }
 
@@ -229,4 +229,4 @@ Log.response = (res, error, data) => {
         res.status(200).json(data);
 };  
 
-module.exports = Log;
+module.exports = si_Log;

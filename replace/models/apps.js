@@ -19,7 +19,7 @@ const Api = {};
 Api.removeSubscription = async (subscription, connection, next) => {
   await new Promise((resolve, reject) => {
         const iddevice = subscription.iddevice;
-        const query = `DELETE FROM device WHERE iddevice = ?`;
+        const query = `DELETE FROM si_device WHERE iddevice = ?`;
         const keys = [iddevice];
         connection.query(query, keys, (error, subscriberRemoved) => {  
             if (error) reject(error);
@@ -35,12 +35,12 @@ Api.allSesion = (created_by, connection, next) => {
     let query = '';
     let keys = [];
 
-    query = `SELECT sesion.latitude, sesion.longitude, sesion.accuracy, sesion.modified_at, u.usuario, u.email FROM sesion INNER JOIN si_user AS u ON u.idsi_user = sesion.si_user_idsi_user WHERE sesion.latitude != '' AND sesion.longitude != ''`;
+    query = `SELECT si_sesion.latitude, si_sesion.longitude, si_sesion.accuracy, si_sesion.modified_at, u.usuario, u.email FROM si_sesion INNER JOIN si_user AS u ON u.idsi_user = si_sesion.si_user_idsi_user WHERE si_sesion.latitude != '' AND si_sesion.longitude != ''`;
     keys = [];
 
     connection.query(query, keys, (error, resultSesion) => {
         if(error) 
-            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leían sesiones.'});
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leían si_sesiones.'});
         else {
             console.log('resultSesion', resultSesion);
             return next(null, { success: true, result: resultSesion, message: 'Registros de sesión leidos correctamente' });
@@ -55,7 +55,7 @@ Api.sesionPosicion = (coords, idsesion, created_by, connection, next) => {
     let query = '';
     let keys = [];
 
-    query = `UPDATE sesion SET latitude = ?, longitude = ?, accuracy = ? WHERE idsesion = ?`;
+    query = `UPDATE si_sesion SET latitude = ?, longitude = ?, accuracy = ? WHERE idsesion = ?`;
     keys = [coords.latitude, coords.longitude, coords.accuracy, idsesion];
 
     connection.query(query, keys, (error, resultSesion) => {
@@ -75,7 +75,7 @@ Api.cerrarSesion = (idsesion, created_by, connection, next) => {
     let query = '';
     let keys = [];
 
-    query = `UPDATE sesion SET estado = 'DESCONECTADO'  WHERE si_user_idsi_user = ?`;
+    query = `UPDATE si_sesion SET estado = 'DESCONECTADO'  WHERE si_user_idsi_user = ?`;
     keys = [created_by];
 
     connection.query(query, keys, (error, resultSesion) => {
@@ -84,11 +84,11 @@ Api.cerrarSesion = (idsesion, created_by, connection, next) => {
         else {
             // Si actualizó
             if (resultSesion.affectedRows) {
-                const querySession = `INSERT INTO sesionestado SET sesion_idsesion = ?, estado = 'DESCONECTADO'`;
-                const query = connection.query(querySession, [idsesion], (error, sesion_estado) => {
+                const querySession = `INSERT INTO si_sesionestado SET si_sesion_idsesion = ?, estado = 'DESCONECTADO'`;
+                const query = connection.query(querySession, [idsesion], (error, si_sesion_estado) => {
 
                     if(error) 
-                        return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se actualizaba el registro de sesion estado'});
+                        return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se actualizaba el registro de si_sesion estado'});
                     else {
                         return next(null, { success: true, result: resultSesion, message: 'Registro actualizado correctamente' });
                     }
@@ -105,7 +105,7 @@ Api.cerrarSesionByIdSesion = (sesion, idsesion, created_by, connection, next) =>
     let query = '';
     let keys = [];
 
-    query = `UPDATE sesion SET estado = 'DESCONECTADO'  WHERE idsesion = ?`;
+    query = `UPDATE si_sesion SET estado = 'DESCONECTADO'  WHERE idsesion = ?`;
     keys = [idsesion];
 
     connection.query(query, keys, (error, resultSesion) => {
@@ -117,11 +117,11 @@ Api.cerrarSesionByIdSesion = (sesion, idsesion, created_by, connection, next) =>
             if (resultSesion.affectedRows) {
 
                 let querySession;
-                querySession = `INSERT INTO sesion_estado SET idsesion = ?, estado = 'DESCONECTADO'`;
+                querySession = `INSERT INTO si_sesion_estado SET idsesion = ?, estado = 'DESCONECTADO'`;
      
-                const query = connection.query(querySession, [idsesion], (error, sesion_estado) => {
+                const query = connection.query(querySession, [idsesion], (error, si_sesion_estado) => {
                     if(error) 
-                        return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se actualizaba el registro de sesion chofer estado'});
+                        return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se actualizaba el registro de si_sesion chofer estado'});
                     else {
                         return next(null, { success: true, result: resultSesion, message: 'Registro actualizado correctamente' });
                     }
@@ -131,7 +131,7 @@ Api.cerrarSesionByIdSesion = (sesion, idsesion, created_by, connection, next) =>
     });
 };
 
-// Guarda token de device
+// Guarda token de si_device
 Api.saveToken = (device, connection, next) => {
     if( !connection )
         return next('Connection refused');
@@ -139,13 +139,13 @@ Api.saveToken = (device, connection, next) => {
     let query = '';
     let keys = [];
 
-    // INSERTAR DEVICE
-    query = 'INSERT INTO device SET si_user_idsi_user = ?, token = ?, idrol = ?  ON DUPLICATE KEY UPDATE si_user_idsi_user = ?, token = ?, idrol = ?';
-    keys = [device.iduser, JSON.stringify(device.token), device.idrol, device.iduser, JSON.stringify(device.token), device.idrol];
+    // INSERTAR si_DEVICE
+    query = 'INSERT INTO si_device SET si_user_idsi_user = ?, token = ?, idrol = ?  ON DUPLICATE KEY UPDATE si_user_idsi_user = ?, token = ?, idrol = ?';
+    keys = [device.iduser, JSON.stringify(device.token), si_device.idrol, si_device.iduser, JSON.stringify(device.token), si_device.idrol];
 
     connection.query(query, keys, (error, result) => {
         if(error) 
-            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se creaba el registro de device'});
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se creaba el registro de si_device'});
         else
             return next(null, { success: true, result: result, message: 'Subcripción y sesión creados' });
     });
@@ -159,14 +159,14 @@ Api.sendToAllDevicesWebPush = (visita, connection, next) => {
     let keys = [];
 
     // SELECCIONA SOLO ROL ADMINISTRADOR = 1
-    query = `SELECT d.token FROM device as d WHERE idrol = 1`;
+    query = `SELECT d.token FROM si_device as d WHERE idrol = 1`;
 
     keys = [];
 
     connection.query(query, keys, (error, subscribers) => {
 
         if(error) 
-            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leía el registro de devices' });
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leía el registro de si_devices' });
         else {
 
             /// webpush 
@@ -209,14 +209,14 @@ Api.sendToIdusers = (si_users, mensaje, connection, next) => {
     let query = '';
     let keys = [];
 
-    // SACAR TOKENS DE DEVICES
-    query = `SELECT d.token, iddevice FROM device as d WHERE si_user_idsi_user IN (${si_users})`;
+    // SACAR TOKENS DE si_DEVICES
+    query = `SELECT d.token, iddevice FROM si_device as d WHERE si_user_idsi_user IN (${si_users})`;
     keys = [];
 
     connection.query(query, keys, (error, subscribers) => {
         
         if (error) 
-            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leía el registro de devices' });
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leía el registro de si_devices' });
         else {
 
             /// webpush 
