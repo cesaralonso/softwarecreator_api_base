@@ -397,7 +397,7 @@ Si_user.login = (email, password, connection, next) => {
                                                             idcliente: user.idcliente || 0,
                                                             super: user.super || 0,
                                                             idsesion: resultSesion[0].idsi_sesion
-                                                        }
+                                                        };
 
                                                         // Generate token
                                                         const token = jwt.sign(payload, mySecretPass, {

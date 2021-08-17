@@ -12,10 +12,10 @@ module.exports = passport => {
         if ( !connection )
             return done('Connection refused');
 
-            connection.query(`SELECT si_user.idsi_user, si_user.usuario, si_user.email, si_user.si_rol_idsi_rol, si_user.super, si_user.baja, s.idsesion, s.estado
+            connection.query(`SELECT si_user.idsi_user, si_user.usuario, si_user.email, si_user.si_rol_idsi_rol, si_user.super, si_user.baja, s.idsi_sesion, s.estado
                                 FROM si_user 
                                 INNER JOIN si_sesion as s ON s.si_user_idsi_user = si_user.idsi_user
-                                WHERE idsi_user = ? 
+                                WHERE si_user.idsi_user = ? 
                                 HAVING si_user.baja IS NULL OR si_user.baja = false`, [jwt_payload.idsi_user], (error, result) => {
 
                 if ( error ) {
