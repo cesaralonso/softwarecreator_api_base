@@ -18,9 +18,9 @@ const Api = {};
 // Borra una subscripción
 Api.removeSubscription = async (subscription, connection, next) => {
   await new Promise((resolve, reject) => {
-        const iddevice = subscription.iddevice;
-        const query = `DELETE FROM si_device WHERE iddevice = ?`;
-        const keys = [iddevice];
+        const idsi_device = subscription.idsi_device;
+        const query = `DELETE FROM si_device WHERE idsi_device = ?`;
+        const keys = [idsi_device];
         connection.query(query, keys, (error, subscriberRemoved) => {  
             if (error) reject(error);
             resolve(subscriberRemoved);
@@ -212,7 +212,7 @@ Api.sendToIdusers = (si_users, mensaje, connection, next) => {
     let keys = [];
 
     // SACAR TOKENS DE si_DEVICES
-    query = `SELECT d.token, iddevice FROM si_device as d WHERE si_user_idsi_user IN (${si_users})`;
+    query = `SELECT d.token, idsi_device FROM si_device as d WHERE si_user_idsi_user IN (${si_users})`;
     keys = [];
 
     connection.query(query, keys, (error, subscribers) => {

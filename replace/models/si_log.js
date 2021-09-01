@@ -65,14 +65,14 @@ Log.all = (created_by, connection, next) => {
         query = `SELECT si_log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM si_log 
                     INNER JOIN si_user as _si_user ON _si_user.idsi_user = si_log.created_by 
                     INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = si_log.si_modulo_idsi_modulo   
-        WHERE si_log.created_at >= (DATE_FORMAT(log.created_at, "%Y-%m-01")) AND si_log.created_by = ? HAVING si_log.baja IS NULL OR si_log.baja = false
+        WHERE si_log.created_at >= (DATE_FORMAT(si_log.created_at, "%Y-%m-01")) AND si_log.created_by = ? HAVING si_log.baja IS NULL OR si_log.baja = false
         ORDER BY created_at DESC`;
         keys = [created_by];
     } else {
         query = `SELECT si_log.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo, _si_user.usuario as created_by FROM si_log 
                     INNER JOIN si_user as _si_user ON _si_user.idsi_user = si_log.created_by 
                     INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = si_log.si_modulo_idsi_modulo   
-        WHERE si_log.created_at >= (DATE_FORMAT(log.created_at, "%Y-%m-01")) HAVING si_log.baja IS NULL OR si_log.baja = false
+        WHERE si_log.created_at >= (DATE_FORMAT(si_log.created_at, "%Y-%m-01")) HAVING si_log.baja IS NULL OR si_log.baja = false
         ORDER BY created_at DESC`;
         keys = [];
     }
