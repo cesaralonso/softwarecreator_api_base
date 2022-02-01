@@ -21,9 +21,9 @@ router
                 return next('auth_data refused');
 
             const created_by = auth_data.user.idsi_user;
-            const idsesion = auth_data.user.idsesion;
+            const idsi_sesion = auth_data.user.idsi_sesion;
             const coords = req.body;
-            Api.sesionPosicion(coords, idsesion, created_by, req.mysql, (error, data) =>{
+            Api.sesionPosicion(coords, idsi_sesion, created_by, req.mysql, (error, data) =>{
                 return Api.response(res, error, data);
             });
         })(req, res, next); 
@@ -34,21 +34,21 @@ router
                 return next('auth_data refused');
 
             const created_by = auth_data.user.idsi_user;
-            const idsesion = auth_data.user.idsesion;
-            Api.cerrarSesion(idsesion, created_by, req.mysql, (error, data) =>{
+            const idsi_sesion = auth_data.user.idsi_sesion;
+            Api.cerrarSesion(idsi_sesion, created_by, req.mysql, (error, data) =>{
                 return Api.response(res, error, data);
             });
         })(req, res, next);
     })
-    .post('/cerrar-sesion/:idsesion', (req, res, next) => {
+    .post('/cerrar-sesion/:idsi_sesion', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             if( !auth_data )
                 return next('auth_data refused');
 
             const sesion = req.body;
-            const idsesion = req.params.idsesion;
+            const idsi_sesion = req.params.idsi_sesion;
             const created_by = auth_data.user.idsi_user;
-            Api.cerrarSesionByIdSesion( sesion, idsesion, created_by, req.mysql, (error, data) =>{
+            Api.cerrarSesionByIdSesion( sesion, idsi_sesion, created_by, req.mysql, (error, data) =>{
                 return Api.response(res, error, data);
             });
                 

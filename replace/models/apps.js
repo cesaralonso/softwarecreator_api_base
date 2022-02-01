@@ -86,8 +86,8 @@ Api.cerrarSesion = (idsi_sesion, created_by, connection, next) => {
         else {
             // Si actualizó
             if (resultSesion.affectedRows) {
-                const querySession = `INSERT INTO si_sesionestado SET si_sesion_idsi_sesion = ?, estado = 'DESCONECTADO'`;
-                const query = connection.query(querySession, [idsi_sesion], (error, si_sesionestado) => {
+                const querySession = `INSERT INTO si_sesionestado SET si_sesion_idsi_sesion = ?, estado = 'DESCONECTADO', created_by = ?`;
+                const query = connection.query(querySession, [idsi_sesion, created_by], (error, si_sesionestado) => {
 
                     if(error) 
                         return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se actualizaba el registro de si_sesion estado'});

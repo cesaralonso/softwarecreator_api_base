@@ -299,9 +299,9 @@ Si_user.login = (email, password, connection, next) => {
     if ( !connection )
         return next('Connection refused');
 
-    const query = connection.query(`SELECT idsi_user, usuario, si_user.email, password, si_rol_idsi_rol, super, si_user.baja 
+    const query = connection.query(`SELECT si_user.* 
                                     FROM si_user 
-                                    WHERE si_user.email = ? AND status != 'SUSPENDIDO' 
+                                    WHERE email = ? AND status != 'SUSPENDIDO' 
                                     HAVING baja IS NULL OR baja = false`, 
     [email], (error, result) => {
 
@@ -361,8 +361,8 @@ Si_user.login = (email, password, connection, next) => {
                             else {
 
                                 // INSERTAR AQUÍ MISMO LA SESIÓN
-                                querySesion = 'INSERT INTO si_sesion SET si_user_idsi_user = ?, estado=\'CONECTADO\' ON DUPLICATE KEY UPDATE si_user_idsi_user = ?, estado=\'CONECTADO\'';
-                                keys = [user.idsi_user, user.idsi_user];
+                                querySesion = 'INSERT INTO si_sesion SET si_user_idsi_user = ?, estado=\'CONECTADO\', created_by = ? ON DUPLICATE KEY UPDATE si_user_idsi_user = ?, estado=\'CONECTADO\'';
+                                keys = [user.idsi_user, user.idsi_user, user.idsi_user];
 
                                 connection.query(querySesion, keys, (error, result) => {
                                     
@@ -381,8 +381,8 @@ Si_user.login = (email, password, connection, next) => {
                                             else {
 
                                                 // INSERTAR SESIÓN ESTADO
-                                                querySesion = `INSERT INTO si_sesionestado SET si_sesion_idsi_sesion = ?, estado = 'CONECTADO'`;
-                                                connection.query(querySesion, [resultSesion[0].idsi_sesion], (error, si_sesion_estado) => {
+                                                querySesion = `INSERT INTO si_sesionestado SET si_sesion_idsi_sesion = ?, estado = 'CONECTADO', created_by = ?`;
+                                                connection.query(querySesion, [resultSesion[0].idsi_sesion, user.idsi_user], (error, si_sesion_estado) => {
 
                                                     if(error) 
                                                         return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se actualizaba el registro de si_sesion estado'});
