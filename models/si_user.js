@@ -168,12 +168,12 @@ Si_user.login = (email, password, connection, next) => {
     if ( !connection )
         return next('Connection refused');
 
-    const query = connection.query(`SELECT a.nombre as area, idsi_user, usuario, si_user.email, password, si_rol_idsi_rol, super, si_user.baja, p.nombre, e.idempleado, e.horaEntrada, e.horaSalida, c.idcliente FROM si_user 
+    const query = connection.query(`SELECT a.nombre as area, idsi_user, usuario, si_user.email, password, si_rol_idsi_rol, super, si_user.is_deleted, p.nombre, e.idempleado, e.horaEntrada, e.horaSalida, c.idcliente FROM si_user 
                                     LEFT JOIN empleado as e on e.si_user_idsi_user = si_user.idsi_user
                                     LEFT JOIN area as a  on a.idarea = e.area_idarea
                                     LEFT JOIN persona as p on p.idpersona =  e.persona_idpersona
                                     LEFT JOIN cliente as c on c.si_user_idsi_user = si_user.idsi_user
-                                    WHERE si_user.email = ? AND status != 'SUSPENDIDO' HAVING baja IS NULL OR baja = false`, 
+                                    WHERE si_user.email = ? AND status != 'SUSPENDIDO' HAVING is_deleted IS NULL OR is_deleted = false`, 
     [email], (error, result) => {
 
 
@@ -193,12 +193,12 @@ Si_user.login = (email, password, connection, next) => {
                     user.password = null;
                     
                     if (!_super) {
-                        _query = `SELECT m.nombre, p.acceso, m.baja, p.writeable, p.deleteable, p.readable, p.updateable, p.write_own, p.delete_own, p.read_own, p.update_own, p.descarga, p.impresion, p.carga, p.embarque, p.cadena
+                        _query = `SELECT m.nombre, p.acceso, m.is_deleted, p.writeable, p.deleteable, p.readable, p.updateable, p.write_own, p.delete_own, p.read_own, p.update_own, p.descarga, p.impresion, p.carga, p.embarque, p.cadena
                                     FROM si_user as u 
                                     INNER JOIN si_rol as r ON r.idsi_rol = u.si_rol_idsi_rol 
                                     INNER JOIN si_permiso as p ON p.si_rol_idsi_rol = r.idsi_rol 
                                     INNER JOIN si_modulo as m ON m.idsi_modulo = p.si_modulo_idsi_modulo 
-                                    WHERE u.idsi_user = ? HAVING m.baja IS NULL OR m.baja = false`;
+                                    WHERE u.idsi_user = ? HAVING m.is_deleted IS NULL OR m.is_deleted = false`;
                     } else {
                         _query = `SELECT m.nombre FROM si_modulo as m`;
                     }
@@ -343,13 +343,13 @@ Si_user.all = (created_by, connection, next) => {
         query = `SELECT si_user.*, si_rol.nombre as si_rol_si_rol_idsi_rol, sesion.estado as sesionestado, sesion.modified_at as sesionmodifiedat  FROM si_user 
         INNER JOIN si_rol on si_rol.idsi_rol = si_user.si_rol_idsi_rol 
         LEFT JOIN sesion on sesion.si_user_idsi_user = si_user.idsi_user
-        WHERE created_by = ? HAVING si_user.baja IS NULL OR si_user.baja = false`;
+        WHERE created_by = ? HAVING si_user.is_deleted IS NULL OR si_user.is_deleted = false`;
         keys = [created_by];
     } else {
         query = `SELECT si_user.*, si_rol.nombre as si_rol_si_rol_idsi_rol, sesion.estado as sesionestado, sesion.modified_at as sesionmodifiedat FROM si_user 
         INNER JOIN si_rol on si_rol.idsi_rol = si_user.si_rol_idsi_rol 
         LEFT JOIN sesion on sesion.si_user_idsi_user = si_user.idsi_user
-        HAVING si_user.baja IS NULL OR si_user.baja = false`;
+        HAVING si_user.is_deleted IS NULL OR si_user.is_deleted = false`;
         keys = [];
     }
 
@@ -370,10 +370,10 @@ Si_user.findById = (idSi_user, created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT * FROM si_user WHERE idsi_user = ? AND created_by = ? HAVING baja IS NULL OR baja = false';
+        query = 'SELECT * FROM si_user WHERE idsi_user = ? AND created_by = ? HAVING is_deleted IS NULL OR is_deleted = false';
         keys = [idSi_user, created_by];
     } else {
-        query = 'SELECT * FROM si_user WHERE idsi_user = ? HAVING baja IS NULL OR baja = false';
+        query = 'SELECT * FROM si_user WHERE idsi_user = ? HAVING is_deleted IS NULL OR is_deleted = false';
         keys = [idSi_user];
     }
 
@@ -394,10 +394,10 @@ Si_user.findBySiRol = (idSi_rol, created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT * FROM si_user WHERE si_rol_idsi_rol = ? AND created_by = ? HAVING baja IS NULL OR baja = false';
+        query = 'SELECT * FROM si_user WHERE si_rol_idsi_rol = ? AND created_by = ? HAVING is_deleted IS NULL OR is_deleted = false';
         keys = [idSi_rol, created_by];
     } else {
-        query = 'SELECT * FROM si_user WHERE si_rol_idsi_rol = ? HAVING baja IS NULL OR baja = false';
+        query = 'SELECT * FROM si_user WHERE si_rol_idsi_rol = ? HAVING is_deleted IS NULL OR is_deleted = false';
         keys = [idSi_rol];
     }
 
@@ -556,10 +556,10 @@ Si_user.logicRemove = (idsi_user, created_by, connection, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'UPDATE si_user SET baja = 1, email = code WHERE idsi_user = ? AND created_by = ?';
+        query = 'UPDATE si_user SET is_deleted = 1, email = code WHERE idsi_user = ? AND created_by = ?';
         keys = [idsi_user, created_by];
     } else {
-        query = 'UPDATE si_user SET baja = 1, email = code WHERE idsi_user = ?';
+        query = 'UPDATE si_user SET is_deleted = 1, email = code WHERE idsi_user = ?';
         keys = [idsi_user];
     }
 
